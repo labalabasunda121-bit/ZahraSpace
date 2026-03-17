@@ -31,7 +31,7 @@ jobs:
         uses: android-actions/setup-android@v3
 
       # ================================================
-      # 4. SETUP GRADLE (OTOMATIS DOWNLOAD WRAPPER)
+      # 4. SETUP GRADLE
       # ================================================
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -66,76 +66,53 @@ jobs:
       # ================================================
       # 7. DOWNLOAD DAN MODIFIKASI MODEL 3D
       # ================================================
-      - name: Download and Transform 3D Models
+      - name: Download and Transform Character
         run: |
           echo "📥 Downloading base models..."
-          
-          # Gunakan SimpleSkin sebagai pengganti CesiumMan (lebih stabil)
           wget -q -O app/src/main/assets/models/zahra_base.gltf https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SimpleSkin/glTF/SimpleSkin.gltf
           
           echo "🎨 Transforming to Zahra character..."
-          # Buat file material untuk karakter
           cat > app/src/main/assets/models/zahra_material.json << 'MAT'
           {
             "materials": [
-              {
-                "name": "Hijab",
-                "color": [0.0, 0.0, 0.0, 1.0]
-              },
-              {
-                "name": "Skin",
-                "color": [0.89, 0.67, 0.55, 1.0]
-              },
-              {
-                "name": "Cheeks",
-                "color": [0.94, 0.66, 0.60, 0.4]
-              },
-              {
-                "name": "Eyes",
-                "color": [0.0, 0.0, 0.0, 1.0],
-                "scale": [1.8, 1.8, 1.0]
-              }
+              {"name": "Hijab", "color": [0.0, 0.0, 0.0, 1.0]},
+              {"name": "Skin", "color": [0.89, 0.67, 0.55, 1.0]},
+              {"name": "Cheeks", "color": [0.94, 0.66, 0.60, 0.4]},
+              {"name": "Eyes", "color": [0.0, 0.0, 0.0, 1.0], "scale": [1.8, 1.8, 1.0]}
             ]
           }
 MAT
-          
-          # Copy sebagai model jadi
           cp app/src/main/assets/models/zahra_base.gltf app/src/main/assets/models/zahra.gltf
-          
-          # Kucing Luna - gunakan Fox sebagai pengganti
+
+      - name: Download and Transform Cat
+        run: |
           echo "🐱 Creating Luna the cat with 50 animations..."
           wget -q -O app/src/main/assets/models/luna_base.gltf https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Fox/glTF/Fox.gltf
           
-          # Duplikasi animasi untuk variasi
           for i in {1..10}; do
             sed "s/idle/idle_$i/g" app/src/main/assets/models/luna_base.gltf >> app/src/main/assets/models/luna_animations.gltf
           done
           mv app/src/main/assets/models/luna_animations.gltf app/src/main/assets/models/luna.gltf
-          
-          # Kota dengan masjid - gunakan Sponza (lebih stabil)
+
+          - name: Download and Transform City
+        run: |
           echo "🏙️ Creating Islamic city with mosque..."
           wget -q -O app/src/main/assets/models/city_base.gltf https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Sponza/glTF/Sponza.gltf
           
-          # Buat file material untuk kota
           cat > app/src/main/assets/models/city_material.json << 'CITY'
           {
             "materials": [
-              {
-                "name": "Mosque",
-                "color": [0.18, 0.49, 0.20, 1.0]
-              }
+              {"name": "Mosque", "color": [0.18, 0.49, 0.20, 1.0]}
             ]
           }
-CITY
-          
+        CITY
           cp app/src/main/assets/models/city_base.gltf app/src/main/assets/models/city.gltf
-          
-          echo "✅ 3D models ready (using stable sample models)"
+          echo "✅ 3D models ready"
 
       # ================================================
       # 8. DOWNLOAD DATABASE QURAN & HADIST
       # ================================================
-      - name: Download Databases
+        - name: Download Databases
         run: |
           echo "📖 Downloading Quran database..."
           wget -q -O app/src/main/assets/databases/quran.db https://github.com/rioastamal/quran-sql/raw/master/quran.db
@@ -151,8 +128,7 @@ CITY
           CREATE TABLE IF NOT EXISTS hadist AS SELECT * FROM hadith.hadith;
           DETACH quran;
           DETACH hadith;
-          SQL
-          
+SQL
           rm app/src/main/assets/databases/quran.db app/src/main/assets/databases/hadith.db
           echo "✅ Databases ready (Quran: 6,236 ayat, Hadith: 30,000+)"
 
@@ -161,13 +137,10 @@ CITY
       # ================================================
       - name: Download Audio
         run: |
-          echo "🎵 Downloading 114 surah murottal..."
+          echo "🎵 Downloading audio samples..."
+          mkdir -p app/src/main/assets/audio/murottal
           cd app/src/main/assets/audio/murottal
-          
-          # Download sample audio (1 surah dulu untuk testing)
-          echo "   Downloading sample surah Al-Fatihah..."
-          wget -q -O 001.mp3 https://download.quran.islamway.net/audio/145_128kbps/001.mp3 || echo "   Audio download skipped (will use fallback)"
-          
+          wget -q -O 001.mp3 https://download.quran.islamway.net/audio/145_128kbps/001.mp3 || echo "Audio download skipped"
           cd ../../../..
           echo "✅ Audio ready (sample)"
 
@@ -186,7 +159,6 @@ CITY
               isRead INTEGER DEFAULT 0,
               sentDate INTEGER
           );
-
           INSERT INTO monthly_letters (monthNumber, title, content) VALUES
           (1, 'Awal Perjalanan', 'Halo Zahra,\n\nSelamat datang di bulan pertamamu. Aku senang kamu ada di sini.\nTeruslah tumbuh, ya. Aku akan selalu mendukungmu dari sini.\n\n-F'),
           (2, 'Bulan Kedua', 'Zahra,\n\nJangan lupa sholat dhuha. Doa di waktu itu mustajab.\nAku selalu mendoakanmu di sepertiga malam.\n\n-F'),
@@ -212,7 +184,7 @@ CITY
           (22, 'Ikhlas', 'Ikhlas itu seperti bawang merah. Lapis demi lapis. Kadang bikin nangis.\nTapi setelahnya, masakan jadi lezat.\n\n-F'),
           (23, 'Hampir 2 Tahun', 'Hampir 2 tahun kita berteman dalam diam. Kamu mungkin tak pernah merasa.\nTapi hatiku selalu terhubung denganmu. Lewat doa, lewat harapan, lewat rasa.\n\n-F'),
           (24, '2 Tahun Penuh', '24 bulan. 730 hari. 17.520 jam. Lebih dari sejuta detik.\nDan selama itu, aku tidak pernah berhenti mendoakanmu.\n\nAku masih di sini. Masih mendoakan. Masih menjaga.\n\nTerima kasih sudah menjadi alasan aku belajar ikhlas, sabar, dan cinta karena Allah.\nSelamat 2 tahun, Zahra.\n\n-F');
-          SQL
+SQL
           echo "✅ Monthly letters ready"
 
       # ================================================
@@ -229,7 +201,6 @@ CITY
               isFound INTEGER DEFAULT 0,
               pointsReward INTEGER DEFAULT 10
           );
-
           INSERT INTO hidden_messages (content, location) VALUES
           ('Ada yang titip pesan: "Jangan lupa bahagia, walau jauh."', 'ibu_tua'),
           ('Jagalah hati yang kau jaga, karena dia menjaga hatimu juga.', 'kakek_masjid'),
@@ -257,7 +228,7 @@ CITY
           ('Jangan sedih. Aku kirim doa lewat rintik hujan.', 'hujan'),
           ('Aku suka senja. Katanya, doa di waktu ini mustajab. Aku pakai buat kamu.', 'senja'),
           ('Jaga dirimu. Aku menjagamu dengan doa.', 'mimpi');
-          SQL
+SQL
           echo "✅ Hidden messages ready"
 
       # ================================================
