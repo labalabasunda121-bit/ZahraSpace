@@ -96,3 +96,6 @@ dependencies {
 
     // Tambah Gson untuk Converters
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // Tambah Gson untuk Converters
+    implementation("com.google.code.gson:gson:2.10.1")
