@@ -1,298 +1,154 @@
 package com.zahra.space.ui.views
 
 import android.content.Context
+import android.graphics.*
 import android.view.SurfaceView
-import android.view.Choreographer
-import com.google.android.filament.*
-import com.google.android.filament.android.UiHelper
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 
-class GameWorldView(context: Context) : SurfaceView(context), Choreographer.FrameCallback {
-    private val engine = Engine.create()
-    private val renderer = engine.createRenderer()
-    private val scene = engine.createScene()
-    private val view = engine.createView()
-    private val camera = engine.createCamera(engine.entityManager.create())
-    private val uiHelper = UiHelper(UiHelper.ContextErrorPolicy.DONT_CHECK)
+/**
+ * Versi 2D dari GameWorldView - TIDAK PAKE FILAMENT
+ * Menggambar kota 2D yang terlihat seperti 3D menggunakan Canvas
+ */
+class GameWorldView(context: Context) : SurfaceView(context) {
+
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private var rotationAngle = 0f
 
     init {
-        uiHelper.attachTo(this)
-        setupScene()
-        createSimpleCity()
-        Choreographer.getInstance().postFrameCallback(this)
+        // Set background color (sky)
+        setBackgroundColor(Color.rgb(135, 206, 235)) // Sky blue
     }
 
-    private fun setupScene() {
-        camera.setProjection(45.0, 1.0, 0.1, 1000.0, Camera.Fov.VERTICAL)
-        camera.lookAt(0.0, 5.0, 20.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0)
-        view.camera = camera
-        view.scene = scene
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
 
-        // Ambient light
-        val light = EntityManager.get().create()
-        LightManager.Builder(LightManager.Type.DIRECTIONAL)
-            .color(1f, 1f, 1f)
-            .intensity(150000f)
-            .direction(0.5f, -1f, 0.5f)
-            .build(engine, light)
-        scene.addEntity(light)
+        val width = width.toFloat()
+        val height = height.toFloat()
+
+        // Draw ground
+        val groundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(34, 139, 34) // Forest green
+            style = Paint.Style.FILL
+        }
+        
+        val groundPath = Path()
+        groundPath.moveTo(0f, height * 0.6f)
+        groundPath.lineTo(width, height * 0.5f)
+        groundPath.lineTo(width, height)
+        groundPath.lineTo(0f, height)
+        groundPath.close()
+        canvas.drawPath(groundPath, groundPaint)
+
+        // Draw buildings
+        drawBuilding(canvas, width * 0.2f, height * 0.45f, 80f, 150f, Color.rgb(169, 169, 169)) // Gray
+        drawBuilding(canvas, width * 0.4f, height * 0.4f, 100f, 200f, Color.rgb(139, 69, 19))  // Brown
+        drawBuilding(canvas, width * 0.6f, height * 0.35f, 120f, 250f, Color.rgb(70, 130, 180)) // Steel blue
+        drawBuilding(canvas, width * 0.8f, height * 0.3f, 90f, 180f, Color.rgb(128, 0, 128)) // Purple
+        
+        // Draw mosque
+        drawMosque(canvas, width * 0.5f, height * 0.4f, 150f)
+        
+        // Draw character (Zahra)
+        drawCharacter(canvas, width * 0.3f, height * 0.55f)
+        
+        // Draw Luna
+        drawLuna(canvas, width * 0.7f, height * 0.6f)
+        
+        // Draw sun
+        drawSun(canvas, width - 100f, 100f)
     }
 
-    private fun createSimpleCity() {
-        // Ground
-        createGround()
+    private fun drawBuilding(canvas: Canvas, x: Float, y: Float, width: Float, height: Float, color: Int) {
+        val buildingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            this.color = color
+            style = Paint.Style.FILL
+        }
         
-        // Buildings
-        createBuilding(-15f, 2f, -10f, 3f, 5f, 3f, 0.7f, 0.7f, 0.7f) // Gray
-        createBuilding(10f, 3f, 5f, 4f, 7f, 4f, 0.6f, 0.4f, 0.2f)   // Brown
-        createBuilding(20f, 1.5f, -15f, 5f, 4f, 5f, 0.5f, 0.5f, 0.8f) // Blue
-        createBuilding(-5f, 2.5f, 15f, 4f, 6f, 4f, 0.8f, 0.8f, 0.2f)  // Yellow
-        createBuilding(5f, 2f, -20f, 3f, 5f, 3f, 0.9f, 0.5f, 0.5f)    // Pink
-        
-        // Masjid (special building)
-        createMosque(0f, 3f, 0f)
-    }
-    
-    private fun createGround() {
-        val vertices = floatArrayOf(
-            -50f, 0f, -50f,
-             50f, 0f, -50f,
-             50f, 0f,  50f,
-            -50f, 0f,  50f
-        )
-        
-        val indices = shortArrayOf(0, 1, 2, 0, 2, 3)
-        
-        val vertexBuffer = VertexBuffer.Builder()
-            .vertexCount(4)
-            .bufferCount(1)
-            .attribute(VertexBuffer.VertexAttribute.POSITION, 0, VertexBuffer.AttributeType.FLOAT3, 0, 12)
-            .build(engine)
-        
-        val floatBuffer = ByteBuffer.allocateDirect(vertices.size * 4)
-            .order(ByteOrder.nativeOrder())
-            .asFloatBuffer()
-            .put(vertices)
-            .rewind()
-        vertexBuffer.setBufferAt(engine, 0, floatBuffer)
-        
-        val indexBuffer = IndexBuffer.Builder()
-            .indexCount(6)
-            .bufferType(IndexBuffer.Builder.IndexType.USHORT)
-            .build(engine)
-        
-        val shortBuffer = ByteBuffer.allocateDirect(indices.size * 2)
-            .order(ByteOrder.nativeOrder())
-            .asShortBuffer()
-            .put(indices)
-            .rewind()
-        indexBuffer.setBuffer(engine, shortBuffer)
-        
-        val material = Material.Builder()
-            .payload(engine, """
-                {
-                    "material": {
-                        "name": "ground",
-                        "shadingModel": "lit",
-                        "parameters": [
-                            {
-                                "name": "baseColor",
-                                "type": "float3",
-                                "default": [0.2, 0.5, 0.2]
-                            }
-                        ]
-                    }
-                }
-            """.toByteArray())
-            .build(engine)
-        
-        val renderable = EntityManager.get().create()
-        RenderableManager.Builder(1)
-            .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBuffer, indexBuffer, 0, 6)
-            .material(0, material.defaultInstance)
-            .build(engine, renderable)
-        
-        scene.addEntity(renderable)
-    }
-    
-    private fun createBuilding(x: Float, y: Float, z: Float, 
-                                width: Float, height: Float, depth: Float,
-                                r: Float, g: Float, b: Float) {
-        val hw = width / 2
-        val hh = height / 2
-        val hd = depth / 2
-        
-        val vertices = floatArrayOf(
-            x - hw, y - hh, z - hd,
-            x + hw, y - hh, z - hd,
-            x + hw, y + hh, z - hd,
-            x - hw, y + hh, z - hd,
-            x - hw, y - hh, z + hd,
-            x + hw, y - hh, z + hd,
-            x + hw, y + hh, z + hd,
-            x - hw, y + hh, z + hd
-        )
-        
-        val indices = shortArrayOf(
-            0,1,2, 0,2,3,
-            4,5,6, 4,6,7,
-            0,1,5, 0,5,4,
-            2,3,7, 2,7,6,
-            0,3,7, 0,7,4,
-            1,2,6, 1,6,5
-        )
-        
-        val vertexBuffer = VertexBuffer.Builder()
-            .vertexCount(8)
-            .bufferCount(1)
-            .attribute(VertexBuffer.VertexAttribute.POSITION, 0, VertexBuffer.AttributeType.FLOAT3, 0, 12)
-            .build(engine)
-        
-        val floatBuffer = ByteBuffer.allocateDirect(vertices.size * 4)
-            .order(ByteOrder.nativeOrder())
-            .asFloatBuffer()
-            .put(vertices)
-            .rewind()
-        vertexBuffer.setBufferAt(engine, 0, floatBuffer)
-        
-        val indexBuffer = IndexBuffer.Builder()
-            .indexCount(36)
-            .bufferType(IndexBuffer.Builder.IndexType.USHORT)
-            .build(engine)
-        
-        val shortBuffer = ByteBuffer.allocateDirect(indices.size * 2)
-            .order(ByteOrder.nativeOrder())
-            .asShortBuffer()
-            .put(indices)
-            .rewind()
-        indexBuffer.setBuffer(engine, shortBuffer)
-        
-        val material = Material.Builder()
-            .payload(engine, """
-                {
-                    "material": {
-                        "name": "building",
-                        "shadingModel": "lit",
-                        "parameters": [
-                            {
-                                "name": "baseColor",
-                                "type": "float3",
-                                "default": [$r, $g, $b]
-                            }
-                        ]
-                    }
-                }
-            """.toByteArray())
-            .build(engine)
-        
-        val renderable = EntityManager.get().create()
-        RenderableManager.Builder(1)
-            .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBuffer, indexBuffer, 0, 36)
-            .material(0, material.defaultInstance)
-            .build(engine, renderable)
-        
-        scene.addEntity(renderable)
-    }
-    
-    private fun createMosque(x: Float, y: Float, z: Float) {
         // Main building
-        createBuilding(x, y, z, 8f, 4f, 8f, 0.9f, 0.9f, 0.9f)
+        canvas.drawRect(x - width/2, y - height, x + width/2, y, buildingPaint)
+        
+        // Windows
+        val windowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.YELLOW
+            style = Paint.Style.FILL
+        }
+        
+        for (i in 1..3) {
+            for (j in 1..4) {
+                canvas.drawRect(
+                    x - width/4 + (i-1) * width/3,
+                    y - height/5 * j,
+                    x - width/4 + (i-1) * width/3 + width/6,
+                    y - height/5 * j + height/8,
+                    windowPaint
+                )
+            }
+        }
+    }
+    
+    private fun drawMosque(canvas: Canvas, x: Float, y: Float, size: Float) {
+        val mosquePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            style = Paint.Style.FILL
+        }
+        
+        // Main building
+        canvas.drawRect(x - size/2, y - size*0.7f, x + size/2, y, mosquePaint)
         
         // Dome
-        createDome(x, y + 2.5f, z, 3f, 0.9f, 0.8f, 0.7f)
+        val domePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(255, 215, 0) // Gold
+            style = Paint.Style.FILL
+        }
+        canvas.drawCircle(x, y - size*0.8f, size*0.3f, domePaint)
         
-        // Minaret
-        createBuilding(x - 5f, y + 3f, z - 3f, 1f, 7f, 1f, 0.8f, 0.7f, 0.6f)
-        createBuilding(x + 5f, y + 3f, z - 3f, 1f, 7f, 1f, 0.8f, 0.7f, 0.6f)
+        // Minarets
+        canvas.drawRect(x - size*0.7f, y - size*0.5f, x - size*0.5f, y, mosquePaint)
+        canvas.drawRect(x + size*0.5f, y - size*0.5f, x + size*0.7f, y, mosquePaint)
     }
     
-    private fun createDome(x: Float, y: Float, z: Float, radius: Float, r: Float, g: Float, b: Float) {
-        // Simplified dome (just a sphere-like shape)
-        val r2 = radius
-        val vertices = floatArrayOf(
-            x - r2, y - r2, z - r2,
-            x + r2, y - r2, z - r2,
-            x + r2, y + r2, z - r2,
-            x - r2, y + r2, z - r2,
-            x - r2, y - r2, z + r2,
-            x + r2, y - r2, z + r2,
-            x + r2, y + r2, z + r2,
-            x - r2, y + r2, z + r2
-        )
+    private fun drawCharacter(canvas: Canvas, x: Float, y: Float) {
+        val charPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         
-        val indices = shortArrayOf(
-            0,1,2, 0,2,3, 4,5,6, 4,6,7,
-            0,1,5, 0,5,4, 2,3,7, 2,7,6,
-            0,3,7, 0,7,4, 1,2,6, 1,6,5
-        )
+        // Body (hijab)
+        charPaint.color = Color.BLACK
+        canvas.drawCircle(x, y - 30f, 20f, charPaint)
         
-        val vertexBuffer = VertexBuffer.Builder()
-            .vertexCount(8)
-            .bufferCount(1)
-            .attribute(VertexBuffer.VertexAttribute.POSITION, 0, VertexBuffer.AttributeType.FLOAT3, 0, 12)
-            .build(engine)
+        // Face
+        charPaint.color = Color.rgb(255, 224, 189) // Skin color
+        canvas.drawCircle(x, y - 35f, 10f, charPaint)
         
-        val floatBuffer = ByteBuffer.allocateDirect(vertices.size * 4)
-            .order(ByteOrder.nativeOrder())
-            .asFloatBuffer()
-            .put(vertices)
-            .rewind()
-        vertexBuffer.setBufferAt(engine, 0, floatBuffer)
-        
-        val indexBuffer = IndexBuffer.Builder()
-            .indexCount(36)
-            .bufferType(IndexBuffer.Builder.IndexType.USHORT)
-            .build(engine)
-        
-        val shortBuffer = ByteBuffer.allocateDirect(indices.size * 2)
-            .order(ByteOrder.nativeOrder())
-            .asShortBuffer()
-            .put(indices)
-            .rewind()
-        indexBuffer.setBuffer(engine, shortBuffer)
-        
-        val material = Material.Builder()
-            .payload(engine, """
-                {
-                    "material": {
-                        "name": "dome",
-                        "shadingModel": "lit",
-                        "parameters": [
-                            {
-                                "name": "baseColor",
-                                "type": "float3",
-                                "default": [$r, $g, $b]
-                            }
-                        ]
-                    }
-                }
-            """.toByteArray())
-            .build(engine)
-        
-        val renderable = EntityManager.get().create()
-        RenderableManager.Builder(1)
-            .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBuffer, indexBuffer, 0, 36)
-            .material(0, material.defaultInstance)
-            .build(engine, renderable)
-        
-        scene.addEntity(renderable)
+        // Eyes
+        charPaint.color = Color.BLACK
+        canvas.drawCircle(x - 4f, y - 38f, 2f, charPaint)
+        canvas.drawCircle(x + 4f, y - 38f, 2f, charPaint)
     }
-
-    override fun doFrame(frameTimeNanos: Long) {
-        if (uiHelper.isReadyToRender) {
-            renderer.render(view)
+    
+    private fun drawLuna(canvas: Canvas, x: Float, y: Float) {
+        val lunaPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        
+        // Body
+        lunaPaint.color = Color.WHITE
+        canvas.drawCircle(x, y - 20f, 15f, lunaPaint)
+        
+        // Head
+        canvas.drawCircle(x, y - 35f, 10f, lunaPaint)
+        
+        // Ears
+        lunaPaint.color = Color.rgb(255, 200, 200) // Pinkish
+        canvas.drawCircle(x - 8f, y - 43f, 5f, lunaPaint)
+        canvas.drawCircle(x + 8f, y - 43f, 5f, lunaPaint)
+        
+        // Eyes
+        lunaPaint.color = Color.BLACK
+        canvas.drawCircle(x - 4f, y - 37f, 2f, lunaPaint)
+        canvas.drawCircle(x + 4f, y - 37f, 2f, lunaPaint)
+    }
+    
+    private fun drawSun(canvas: Canvas, x: Float, y: Float) {
+        val sunPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(255, 165, 0) // Orange
+            style = Paint.Style.FILL
         }
-        Choreographer.getInstance().postFrameCallback(this)
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        Choreographer.getInstance().removeFrameCallback(this)
-        engine.destroyRenderer(renderer)
-        engine.destroyView(view)
-        engine.destroyScene(scene)
-        engine.destroyCamera(camera)
-        engine.destroy()
+        canvas.drawCircle(x, y, 40f, sunPaint)
     }
 }
