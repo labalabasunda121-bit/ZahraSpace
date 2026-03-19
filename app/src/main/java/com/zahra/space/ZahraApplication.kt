@@ -5,14 +5,12 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import dagger.hilt.android.HiltAndroidApp
-import timber.log.Timber
 
 @HiltAndroidApp
 class ZahraApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
         }
         createNotificationChannels()
     }
