@@ -10,8 +10,6 @@ import dagger.hilt.android.HiltAndroidApp
 class ZahraApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        if (BuildConfig.DEBUG) {
-        }
         createNotificationChannels()
     }
     
