@@ -15,7 +15,7 @@ class GameWorldView(context: Context) : SurfaceView(context), Choreographer.Fram
     private val view = engine.createView()
     private val camera = engine.createCamera(engine.entityManager.create())
     private val uiHelper = UiHelper(UiHelper.ContextErrorPolicy.DONT_CHECK)
-    private val assetLoader = AssetLoader(engine, UbershaderLoader(), EntityManager.get())
+    private val assetLoader = AssetLoader(engine, MaterialProvider(), EntityManager.get())
 
     init {
         uiHelper.attachTo(this)
@@ -40,13 +40,13 @@ class GameWorldView(context: Context) : SurfaceView(context), Choreographer.Fram
         try {
             context.assets.open("models/city.gltf").use { inputStream ->
                 val bytes = inputStream.readBytes()
-                assetLoader.createAssetFromBuffer(ByteBuffer.wrap(bytes))?.let {
+                    assetLoader.createAsset(buffer)?.let { scene.addEntities(it.entities) }
                     scene.addEntities(it.entities)
                 }
             }
             context.assets.open("models/zahra.gltf").use { inputStream ->
                 val bytes = inputStream.readBytes()
-                assetLoader.createAssetFromBuffer(ByteBuffer.wrap(bytes))?.let {
+                    assetLoader.createAsset(buffer)?.let { scene.addEntities(it.entities) }
                     scene.addEntities(it.entities)
                 }
             }
@@ -68,7 +68,7 @@ class GameWorldView(context: Context) : SurfaceView(context), Choreographer.Fram
         engine.destroyRenderer(renderer)
         engine.destroyView(view)
         engine.destroyScene(scene)
-        engine.destroyCamera(camera)
+        camera.destroy(engine)
         engine.destroy()
     }
 }

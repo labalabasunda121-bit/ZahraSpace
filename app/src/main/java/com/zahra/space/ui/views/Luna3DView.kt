@@ -15,7 +15,7 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
     private val view = engine.createView()
     private val camera = engine.createCamera(engine.entityManager.create())
     private val uiHelper = UiHelper(UiHelper.ContextErrorPolicy.DONT_CHECK)
-    private val assetLoader = AssetLoader(engine, UbershaderLoader(), EntityManager.get())
+    private val assetLoader = AssetLoader(engine, MaterialProvider(), EntityManager.get())
 
     init {
         uiHelper.attachTo(this)
@@ -40,7 +40,7 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
         try {
             context.assets.open("models/luna.gltf").use { inputStream ->
                 val bytes = inputStream.readBytes()
-                assetLoader.createAssetFromBuffer(ByteBuffer.wrap(bytes))?.let {
+        assetLoader.createAsset(buffer)?.let { scene.addEntities(it.entities) }
                     scene.addEntities(it.entities)
                 }
             }
@@ -62,7 +62,7 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
         engine.destroyRenderer(renderer)
         engine.destroyView(view)
         engine.destroyScene(scene)
-        engine.destroyCamera(camera)
+        camera.destroy(engine)
         engine.destroy()
     }
 }
