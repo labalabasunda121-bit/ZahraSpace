@@ -1,5 +1,6 @@
 package com.zahra.space.viewmodel
 
+import com.zahra.space.game.RestaurantState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zahra.space.data.dao.UserDao
@@ -108,7 +109,7 @@ class GameWorldViewModel @Inject constructor(
         viewModelScope.launch {
             restaurantDao.getRestaurant().collect { restaurant ->
                 if (restaurant != null) {
-                        _restaurant.value = RestaurantState(
+                        RestaurantState(
                         level = restaurant.level,
                         experience = restaurant.experience,
                         balance = restaurant.balance,

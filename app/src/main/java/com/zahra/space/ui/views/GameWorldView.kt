@@ -16,7 +16,7 @@ class GameWorldView(context: Context) : SurfaceView(context), Choreographer.Fram
     private val camera = engine.createCamera(engine.entityManager.create())
     private val uiHelper = UiHelper(UiHelper.ContextErrorPolicy.DONT_CHECK)
     private val gltfio = Gltfio()
-    private val assetLoader = gltfio.createAssetLoader(engine, MaterialProvider(), EntityManager.get())
+    private val assetLoader = AssetLoader(engine, MaterialProvider(), EntityManager.get())
 
     init {
         uiHelper.attachTo(this)

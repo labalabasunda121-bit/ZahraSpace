@@ -1,5 +1,8 @@
 package com.zahra.space.ui.screens.dzikir
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment

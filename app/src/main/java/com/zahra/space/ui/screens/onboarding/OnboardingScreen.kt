@@ -1,4 +1,5 @@
 package com.zahra.space.ui.screens.onboarding
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -25,11 +26,11 @@ fun OnboardingScreen(onComplete: (User) -> Unit) {
                 Spacer(Modifier.height(48.dp))
                 Button({ step = 2 }, Modifier.fillMaxWidth()) { Text("LANJUT") } }
             2 -> { Text("Siapa nama panggilan kamu?", fontSize = 18.sp)
-                OutlinedTextField(name, { name = it }, Modifier.fillMaxWidth(), placeholder = { Text("Zahra") })
+                OutlinedTextField(value = name, onValueChange = { name = it }, Modifier.fillMaxWidth(), placeholder = { Text("Zahra") })
                 Spacer(Modifier.height(32.dp))
                 Button({ step = 3 }, enabled = name.isNotBlank(), Modifier.fillMaxWidth()) { Text("LANJUT") } }
             3 -> { Text("Kapan kamu lahir? (DD/MM/YYYY)", fontSize = 18.sp)
-                OutlinedTextField(birthDate, { birthDate = it }, Modifier.fillMaxWidth(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+                OutlinedTextField(value = birthDate, onValueChange = { birthDate = it }, Modifier.fillMaxWidth(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
                 Spacer(Modifier.height(32.dp))
                 Button({ step = 4 }, enabled = birthDate.length == 10, Modifier.fillMaxWidth()) { Text("LANJUT") } }
             4 -> { Text("Pilih avatar favoritmu:", fontSize = 18.sp)
