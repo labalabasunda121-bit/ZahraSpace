@@ -6,6 +6,7 @@ import com.zahra.space.data.dao.UserDao
 import com.zahra.space.data.dao.PetDao
 import com.zahra.space.data.dao.DailyChecklistDao
 import com.zahra.space.game.Pet
+import com.zahra.space.game.PetState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

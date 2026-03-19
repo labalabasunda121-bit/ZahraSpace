@@ -1,5 +1,6 @@
 package com.zahra.space.services
 
+import com.zahra.space.receivers.PrayerAlarmReceiver
 import android.app.*
 import android.content.Context
 import android.content.Intent
