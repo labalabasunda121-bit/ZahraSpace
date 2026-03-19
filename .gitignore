@@ -1,0 +1,131 @@
+# ================================================
+# Git Ignore untuk ZahraSpace
+# ================================================
+
+# --- Android Studio / IntelliJ ---
+*.iml
+.idea/
+.idea/*
+*.iws
+*.ipr
+out/
+.classpath
+.project
+.settings/
+.gradle/
+local.properties
+
+# --- Gradle ---
+build/
+*/build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradle/
+gradle/
+buildSrc/build/
+
+# --- Android ---
+app/build/
+app/*.apk
+app/*.aab
+app/debug/
+app/release/
+*.keystore
+*.jks
+*.keys
+secrets.properties
+key.properties
+signing.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.crt
+*.pem
+*.der
+
+# --- OS Files ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# --- Logs & Temp ---
+*.log
+*.tmp
+*.temp
+*.cache
+*.pid
+*.seed
+*.pid.lock
+build/
+
+# --- Assets yang akan di-download nanti (opsional) ---
+# Uncomment jika ingin mengabaikan file besar
+# app/src/main/assets/audio/
+# app/src/main/assets/models/
+# app/src/main/assets/data/hadits/
+# quran-indonesia.sql
+# hadits.zip
+# audio.zip
+# models.zip
+
+# --- Backup files ---
+*.bak
+*.backup
+*.old
+
+# --- Project specific ---
+# File konfigurasi lokal
+config.properties
+*.conf
+
+# --- Environment files ---
+.env
+.env.local
+.env.*.local
+
+# --- Node (if any) ---
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# --- Python (for scripts) ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# --- VSCode ---
+.vscode/
+*.code-workspace
+
+# --- Keystore (penting!) ---
+*.jks
+*.keystore
+*.p12
+
+# --- Firebase (optional) ---
+google-services.json
+GoogleService-Info.plist
+
+# --- Fastlane ---
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# --- Crashlytics ---
+crashlytics-build.properties
+fabric.properties
+
