@@ -15,7 +15,10 @@ class GameWorldView(context: Context) : SurfaceView(context), Choreographer.Fram
     private val view = engine.createView()
     private val camera = engine.createCamera(engine.entityManager.create())
     private val uiHelper = UiHelper(UiHelper.ContextErrorPolicy.DONT_CHECK)
-    private val assetLoader = AssetLoader(engine, MaterialProvider(), EntityManager.get())
+    
+    // CARA BENAR: Pake FilamentAssetLoader, bukan AssetLoader dengan MaterialProvider
+    private val gltfio = Gltfio()
+    private val assetLoader = gltfio.createAssetLoader(engine)
 
     init {
         uiHelper.attachTo(this)
@@ -30,6 +33,7 @@ class GameWorldView(context: Context) : SurfaceView(context), Choreographer.Fram
         view.camera = camera
         view.scene = scene
 
+        // Ambient light
         val light = EntityManager.get().create()
         LightManager.Builder(LightManager.Type.DIRECTIONAL)
             .color(1f, 1f, 1f)
@@ -41,27 +45,23 @@ class GameWorldView(context: Context) : SurfaceView(context), Choreographer.Fram
 
     private fun loadModels() {
         try {
-            context.assets.open("models/city.gltf").use { inputStream ->
-                val bytes = inputStream.readBytes()
-                val buffer = ByteBuffer.wrap(bytes)
-                assetLoader.createAsset(buffer)?.let { asset ->
-                    scene.addEntities(asset.entities)
-                }
-            }
+            // Load city
+            val cityBytes = context.assets.open("models/city.gltf").readBytes()
+            val cityBuffer = ByteBuffer.wrap(cityBytes)
+            val cityAsset = assetLoader.createAsset(cityBuffer)
+            cityAsset?.let { scene.addEntities(it.entities) }
         } catch (e: Exception) {
-            // Log error jika perlu, tapi jangan sampai crash
+            // Skip if model not found
         }
 
         try {
-            context.assets.open("models/zahra.gltf").use { inputStream ->
-                val bytes = inputStream.readBytes()
-                val buffer = ByteBuffer.wrap(bytes)
-                assetLoader.createAsset(buffer)?.let { asset ->
-                    scene.addEntities(asset.entities)
-                }
-            }
+            // Load zahra
+            val zahraBytes = context.assets.open("models/zahra.gltf").readBytes()
+            val zahraBuffer = ByteBuffer.wrap(zahraBytes)
+            val zahraAsset = assetLoader.createAsset(zahraBuffer)
+            zahraAsset?.let { scene.addEntities(it.entities) }
         } catch (e: Exception) {
-            // Log error jika perlu, tapi jangan sampai crash
+            // Skip if model not found
         }
     }
 
@@ -75,6 +75,7 @@ class GameWorldView(context: Context) : SurfaceView(context), Choreographer.Fram
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         Choreographer.getInstance().removeFrameCallback(this)
+        // CARA BENAR: destroy semuanya
         engine.destroyRenderer(renderer)
         engine.destroyView(view)
         engine.destroyScene(scene)

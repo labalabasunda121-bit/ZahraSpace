@@ -15,7 +15,10 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
     private val view = engine.createView()
     private val camera = engine.createCamera(engine.entityManager.create())
     private val uiHelper = UiHelper(UiHelper.ContextErrorPolicy.DONT_CHECK)
-    private val assetLoader = AssetLoader(engine, MaterialProvider(), EntityManager.get())
+    
+    // CARA BENAR: Pake FilamentAssetLoader
+    private val gltfio = Gltfio()
+    private val assetLoader = gltfio.createAssetLoader(engine)
 
     init {
         uiHelper.attachTo(this)
@@ -30,6 +33,7 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
         view.camera = camera
         view.scene = scene
 
+        // Ambient light
         val light = EntityManager.get().create()
         LightManager.Builder(LightManager.Type.DIRECTIONAL)
             .color(1f, 1f, 1f)
@@ -41,15 +45,12 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
 
     private fun loadModel() {
         try {
-            context.assets.open("models/luna.gltf").use { inputStream ->
-                val bytes = inputStream.readBytes()
-                val buffer = ByteBuffer.wrap(bytes)
-                assetLoader.createAsset(buffer)?.let { asset ->
-                    scene.addEntities(asset.entities)
-                }
-            }
+            val bytes = context.assets.open("models/luna.gltf").readBytes()
+            val buffer = ByteBuffer.wrap(bytes)
+            val asset = assetLoader.createAsset(buffer)
+            asset?.let { scene.addEntities(it.entities) }
         } catch (e: Exception) {
-            // Log error jika perlu, tapi jangan sampai crash
+            // Skip if model not found
         }
     }
 
@@ -63,6 +64,7 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         Choreographer.getInstance().removeFrameCallback(this)
+        // CARA BENAR: destroy semuanya
         engine.destroyRenderer(renderer)
         engine.destroyView(view)
         engine.destroyScene(scene)
