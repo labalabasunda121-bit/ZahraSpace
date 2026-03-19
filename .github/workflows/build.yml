@@ -1,13 +1,15 @@
-name: Build Zahra Space APK
+name: Build ZahraSpace APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,82 +23,10 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: 8.11
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-      - name: Create gradle wrapper if missing
-        run: |
-          if [ ! -f gradlew ]; then
-            echo "📦 Creating gradle wrapper..."
-            gradle wrapper
-            chmod +x gradlew
-          fi
-
-      # ================================================
-      # DOWNLOAD DAN MODIFIKASI MODEL 3D
-      # ================================================
-      - name: Transform Zahra character
-        run: |
-          echo "🎨 MODIFIKASI: Ubah jadi Zahra (hijab hitam, mata besar, pipi merah)..."
-          if [ -f app/src/main/assets/models/zahra.gltf ]; then
-            cd app/src/main/assets/models
-            
-            # Hijab hitam
-            sed -i 's/"baseColorFactor": \[.*\]/"baseColorFactor": [0.0, 0.0, 0.0, 1.0]/g' zahra.gltf
-            
-            # Kulit caramel
-            sed -i 's/"baseColorFactor": \[0.8, 0.8, 0.8, 1.0\]/"baseColorFactor": [0.89, 0.67, 0.55, 1.0]/g' zahra.gltf
-            
-            # Pipi merah (emissive)
-            sed -i 's/"name": "Skin"/"name": "Skin", "emissiveFactor": [0.1, 0.0, 0.0]/g' zahra.gltf
-            
-            # Mata besar
-            sed -i 's/"scale": \[1.0, 1.0, 1.0\]/"scale": [1.8, 1.8, 1.0]/g' zahra.gltf
-            
-            echo "✅ Zahra ready"
-          else
-            echo "⚠️ File zahra.gltf tidak ditemukan"
-          fi
-
-      - name: Transform City
-        run: |
-          echo "🏙️ MODIFIKASI: Tambah masjid..."
-          if [ -f app/src/main/assets/models/city.gltf ]; then
-            cd app/src/main/assets/models
-            
-            # Ganti nama jadi masjid
-            sed -i 's/Sponza/Masjid Nurul Huda/g' city.gltf
-            
-            # Kubah hijau
-            sed -i 's/"baseColorFactor": \[0.5, 0.5, 0.5, 1.0\]/"baseColorFactor": [0.18, 0.49, 0.20, 1.0]/g' city.gltf
-            
-            echo "✅ City ready"
-          else
-            echo "⚠️ File city.gltf tidak ditemukan"
-          fi
-
-      - name: Transform Cat
-        run: |
-          echo "🐱 MODIFIKASI: Luna the cat..."
-          if [ -f app/src/main/assets/models/luna.gltf ]; then
-            cd app/src/main/assets/models
-            
-            # Duplikasi animasi (sederhana)
-            for i in {1..5}; do
-              echo "Animation $i ready"
-            done
-            
-            echo "✅ Luna ready"
-          else
-            echo "⚠️ File luna.gltf tidak ditemukan"
-          fi
-
-      # ================================================
-      # BUILD APK
-      # ================================================
-      - name: Build with Gradle
+      - name: Build Debug APK
         run: ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
