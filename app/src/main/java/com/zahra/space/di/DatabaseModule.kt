@@ -65,4 +65,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideMonthlyLetterDao(appDatabase: AppDatabase): MonthlyLetterDao = appDatabase.monthlyLetterDao()
+
+    @Provides
+    @Singleton
+    fun provideRestaurantDao(appDatabase: AppDatabase): RestaurantDao = appDatabase.restaurantDao()
 }
