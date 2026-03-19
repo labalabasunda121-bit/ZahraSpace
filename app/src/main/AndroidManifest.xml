@@ -25,7 +25,6 @@
         </activity>
         
         <service android:name=".services.PrayerNotificationService" android:exported="false" />
-        <service android:name=".services.HiddenMessageService" android:exported="false" />
         <receiver android:name=".receivers.PrayerAlarmReceiver" android:exported="false" />
             
     </application>

@@ -45,9 +45,9 @@ fun PetShopScreen() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row {
-                            Text(text = item.icon)
+                            Text(item.icon)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = item.name)
+                            Text(item.name)
                         }
                         Button(
                             onClick = { }

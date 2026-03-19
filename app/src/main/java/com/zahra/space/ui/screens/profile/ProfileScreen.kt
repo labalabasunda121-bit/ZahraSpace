@@ -21,6 +21,7 @@ fun ProfileScreen(
     val name by vm.userName.collectAsState()
     val points by vm.totalPoints.collectAsState()
     val iman by vm.imanLevel.collectAsState()
+    val streak by vm.streak.collectAsState()
     val join by vm.joinDate.collectAsState()
     
     Scaffold(
@@ -85,8 +86,9 @@ fun ProfileScreen(
                         )
                         Divider(modifier = Modifier.padding(vertical = 8.dp))
                         
-                        StatRow(label = "✨ Poin", value = "$points")
-                        StatRow(label = "❤️ Iman", value = "$iman%")
+                        StatRow("✨ Poin", "$points")
+                        StatRow("❤️ Iman", "$iman%")
+                        StatRow("🔥 Streak", "$streak hari")
                     }
                 }
             }
@@ -102,7 +104,7 @@ fun StatRow(label: String, value: String) {
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = label)
+        Text(label)
         Text(
             text = value,
             color = MaterialTheme.colorScheme.primary

@@ -10,12 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zahra.space.ui.views.Luna3DView
 import com.zahra.space.viewmodel.DashboardViewModel
-import java.text.SimpleDateFormat
-import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +30,7 @@ fun DashboardScreen(
     val name by viewModel.userName.collectAsState()
     val points by viewModel.totalPoints.collectAsState()
     val iman by viewModel.imanLevel.collectAsState()
+    val streak by viewModel.streak.collectAsState()
     val pet by viewModel.petStatus.collectAsState()
     val greeting by viewModel.greeting.collectAsState()
     val date by viewModel.currentDate.collectAsState()
@@ -55,6 +52,7 @@ fun DashboardScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        // Header
         Card(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -74,6 +72,7 @@ fun DashboardScreen(
         
         Spacer(modifier = Modifier.height(16.dp))
         
+        // Stats Card
         Card(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -81,21 +80,51 @@ fun DashboardScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("❤️ Iman")
+                    Text("❤️ Iman", style = MaterialTheme.typography.titleMedium)
                     LinearProgressIndicator(
                         progress = iman / 100f,
                         modifier = Modifier.width(150.dp)
                     )
                 }
-                Text("✨ $points")
+                Text("✨ $points", style = MaterialTheme.typography.titleMedium)
+                Text("🔥 $streak", style = MaterialTheme.typography.titleMedium)
             }
         }
         
         Spacer(modifier = Modifier.height(16.dp))
         
+        // Prayer Checklist
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text("✅ Sholat Hari Ini", style = MaterialTheme.typography.titleMedium)
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    PrayerButton("S", "Subuh")
+                    PrayerButton("D", "Dzuhur")
+                    PrayerButton("A", "Ashar")
+                    PrayerButton("M", "Maghrib")
+                    PrayerButton("I", "Isya")
+                    PrayerButton("Dh", "Dhuha")
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        // Luna Card
         Card(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -104,21 +133,32 @@ fun DashboardScreen(
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("🐱 Luna")
-                    Text("Level ${pet.level}")
+                    Text("🐱 Luna", style = MaterialTheme.typography.titleMedium)
+                    Text("Level ${pet.level}", style = MaterialTheme.typography.bodyMedium)
                 }
                 
-                AndroidView(
-                    factory = { ctx -> Luna3DView(ctx) },
-                    modifier = Modifier
-                        .size(100.dp)
-                        .align(Alignment.CenterHorizontally)
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Luna ASCII Art
+                Text(
+                    text = "   /\\_/\\\n  ( o.o )\n   > ^ <",
+                    fontSize = 12.sp,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))
                 
+                // Status Bars
+                StatBar("🍖 Lapar", pet.hunger)
+                StatBar("😊 Senang", pet.happiness)
+                StatBar("🧼 Bersih", pet.cleanliness)
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Action Buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -126,12 +166,14 @@ fun DashboardScreen(
                     ActionButton("🍖") { viewModel.feedPet() }
                     ActionButton("🎾") { viewModel.playWithPet() }
                     ActionButton("🧼") { viewModel.cleanPet() }
+                    ActionButton("💤") { viewModel.sleepPet() }
                 }
             }
         }
         
         Spacer(modifier = Modifier.height(16.dp))
         
+        // Menu Grid
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier.fillMaxWidth(),
@@ -164,6 +206,41 @@ fun DashboardScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun PrayerButton(text: String, description: String) {
+    var checked by remember { mutableStateOf(false) }
+    Button(
+        onClick = { checked = !checked },
+        modifier = Modifier.size(48.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (checked) 
+                MaterialTheme.colorScheme.primary 
+            else 
+                MaterialTheme.colorScheme.secondaryContainer
+        )
+    ) {
+        Text(text, fontSize = 12.sp)
+    }
+}
+
+@Composable
+fun StatBar(label: String, value: Int) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(label, modifier = Modifier.width(60.dp))
+        LinearProgressIndicator(
+            progress = value / 100f,
+            modifier = Modifier
+                .weight(1f)
+                .height(8.dp)
+        )
+        Text("$value%", modifier = Modifier.width(40.dp))
     }
 }
 

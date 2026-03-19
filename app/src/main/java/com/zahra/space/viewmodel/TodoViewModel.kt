@@ -1,4 +1,5 @@
 package com.zahra.space.viewmodel
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zahra.space.data.dao.TodoDao
@@ -10,10 +11,18 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TodoViewModel @Inject constructor(private val todoDao: TodoDao) : ViewModel() {
+class TodoViewModel @Inject constructor(
+    private val todoDao: TodoDao
+) : ViewModel() {
+    
     private val _activeTodos = MutableStateFlow<List<Todo>>(emptyList())
     val activeTodos: StateFlow<List<Todo>> = _activeTodos
-    fun loadActiveTodos() = viewModelScope.launch {
-        todoDao.getActiveTodos().collect { _activeTodos.value = it }
+    
+    fun loadActiveTodos() {
+        viewModelScope.launch {
+            todoDao.getActiveTodos().collect { list ->
+                _activeTodos.value = list
+            }
+        }
     }
 }

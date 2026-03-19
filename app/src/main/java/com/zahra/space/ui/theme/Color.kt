@@ -1,5 +1,7 @@
 package com.zahra.space.ui.theme
+
 import androidx.compose.ui.graphics.Color
+
 val PrimaryGreen = Color(0xFF2E7D32)
 val PrimaryLightGreen = Color(0xFF4CAF50)
 val PrimaryDarkGreen = Color(0xFF1B5E20)

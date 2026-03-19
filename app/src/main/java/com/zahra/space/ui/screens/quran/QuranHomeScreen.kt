@@ -1,6 +1,5 @@
 package com.zahra.space.ui.screens.quran
 
-import com.zahra.space.viewmodel.SurahInfo
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,11 +20,9 @@ fun QuranHomeScreen(
 ) {
     val vm: QuranViewModel = viewModel()
     val surahList by vm.surahList.collectAsState()
-    val surahNames by vm.surahNames.collectAsState()
     
     LaunchedEffect(Unit) {
         vm.loadSurahList()
-        vm.loadSurahNames()
     }
     
     Scaffold(
@@ -43,7 +40,6 @@ fun QuranHomeScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(surahList) { surah ->
-                val name = surahNames[surah.suraId] ?: SurahInfo("Surah ${surah.suraId}", "")
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { onNavigateToRead(surah.suraId, 1) }
@@ -56,13 +52,8 @@ fun QuranHomeScreen(
                     ) {
                         Column {
                             Text(
-                                text = "${surah.suraId}. ${name.latin}",
+                                text = "${surah.suraId}. Surah ${surah.suraId}",
                                 style = MaterialTheme.typography.titleMedium
-                            )
-                            Text(
-                                text = name.arabic,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }

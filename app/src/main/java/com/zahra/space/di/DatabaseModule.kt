@@ -36,10 +36,6 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun providePetDao(appDatabase: AppDatabase): PetDao = appDatabase.petDao()
-
-    @Provides
-    @Singleton
     fun provideQuranDao(appDatabase: AppDatabase): QuranDao = appDatabase.quranDao()
 
     @Provides
@@ -60,13 +56,13 @@ object DatabaseModule {
 
     @Provides
     @Singleton
+    fun providePetDao(appDatabase: AppDatabase): PetDao = appDatabase.petDao()
+
+    @Provides
+    @Singleton
     fun provideHiddenMessageDao(appDatabase: AppDatabase): HiddenMessageDao = appDatabase.hiddenMessageDao()
 
     @Provides
     @Singleton
     fun provideMonthlyLetterDao(appDatabase: AppDatabase): MonthlyLetterDao = appDatabase.monthlyLetterDao()
-
-    @Provides
-    @Singleton
-    fun provideRestaurantDao(appDatabase: AppDatabase): RestaurantDao = appDatabase.restaurantDao()
 }

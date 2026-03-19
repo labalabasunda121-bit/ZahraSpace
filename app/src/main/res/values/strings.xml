@@ -7,11 +7,7 @@
     <string name="fitness">Fitness</string>
     <string name="pet">Pet</string>
     <string name="game">Game</string>
-    <string name="profile">Profil</string>
-    <string name="settings">Pengaturan</string>
+    <string name="profile">Profile</string>
+    <string name="settings">Settings</string>
     <string name="letters">Surat</string>
-    <string name="greeting_morning">Selamat Pagi</string>
-    <string name="greeting_afternoon">Selamat Siang</string>
-    <string name="greeting_evening">Selamat Sore</string>
-    <string name="greeting_night">Selamat Malam</string>
 </resources>

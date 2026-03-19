@@ -9,9 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zahra.space.ui.views.Luna3DView
 import com.zahra.space.viewmodel.PetViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,13 +37,16 @@ fun PetHomeScreen(onNavigateToShop: () -> Unit) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AndroidView(
-                factory = { ctx -> Luna3DView(ctx) },
-                modifier = Modifier.size(200.dp)
+            // Luna ASCII Art
+            Text(
+                text = "   /\\_/\\\n  ( o.o )\n   > ^ <",
+                fontSize = 24.sp,
+                modifier = Modifier.padding(16.dp)
             )
             
             Spacer(modifier = Modifier.height(16.dp))
             
+            // Stats
             Card(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -57,11 +58,13 @@ fun PetHomeScreen(onNavigateToShop: () -> Unit) {
                     StatBar("Lapar", pet.hunger)
                     StatBar("Senang", pet.happiness)
                     StatBar("Bersih", pet.cleanliness)
+                    StatBar("Energi", pet.energy)
                 }
             }
             
             Spacer(modifier = Modifier.height(16.dp))
             
+            // Action Buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -69,6 +72,7 @@ fun PetHomeScreen(onNavigateToShop: () -> Unit) {
                 ActionButton("🍖") { vm.feed() }
                 ActionButton("🎾") { vm.play() }
                 ActionButton("🧼") { vm.clean() }
+                ActionButton("💤") { vm.sleep() }
             }
         }
     }
@@ -81,12 +85,14 @@ fun StatBar(label: String, value: Int) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = label, modifier = Modifier.width(60.dp))
+        Text(label, modifier = Modifier.width(60.dp))
         LinearProgressIndicator(
             progress = value / 100f,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .height(8.dp)
         )
-        Text(text = "$value%", modifier = Modifier.width(40.dp))
+        Text("$value%", modifier = Modifier.width(40.dp))
     }
 }
 

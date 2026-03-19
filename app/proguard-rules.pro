@@ -1,18 +1,14 @@
-# Filament
--keep class com.google.android.filament.** { *; }
--keep class com.google.android.filament.gltfio.** { *; }
-# Room
--keep class * extends androidx.room.RoomDatabase
--keep @androidx.room.Entity class *
--keep class **.data.entity.** { *; }
-# Hilt
+# Keep Hilt
 -keep class dagger.hilt.** { *; }
 -keep @dagger.hilt.* class *
-# Gson
+
+# Keep Room
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+
+# Keep Gson
 -keep class com.google.gson.** { *; }
 -keep class com.zahra.space.data.entity.** { *; }
-# Compose
+
+# Keep Compose
 -keep class androidx.compose.** { *; }
-# Kotlin
--keep class kotlin.** { *; }
--keep class kotlinx.coroutines.** { *; }

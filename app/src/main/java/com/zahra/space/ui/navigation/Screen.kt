@@ -6,7 +6,6 @@ sealed class Screen(val route: String) {
     data object Dashboard : Screen("dashboard")
     data object Quran : Screen("quran")
     data object QuranRead : Screen("quran_read/{surahId}/{verseId}")
-    data object QuranHafalan : Screen("quran_hafalan/{surahId}")
     data object Dzikir : Screen("dzikir")
     data object DzikirCounter : Screen("dzikir_counter/{dzikirId}")
     data object Checklist : Screen("checklist")
@@ -15,7 +14,6 @@ sealed class Screen(val route: String) {
     data object TodoCreate : Screen("todo_create")
     data object Fitness : Screen("fitness")
     data object Pet : Screen("pet")
-    data object PetShop : Screen("pet_shop")
     data object Game : Screen("game")
     data object Profile : Screen("profile")
     data object Settings : Screen("settings")
@@ -24,7 +22,9 @@ sealed class Screen(val route: String) {
     fun withArgs(vararg args: Any): String {
         return buildString {
             append(route)
-            args.forEach { arg -> append("/$arg") }
+            args.forEach { arg ->
+                append("/$arg")
+            }
         }
     }
 }

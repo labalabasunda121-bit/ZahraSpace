@@ -1,4 +1,5 @@
 package com.zahra.space.viewmodel
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zahra.space.data.dao.MonthlyLetterDao
@@ -10,10 +11,18 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LetterViewModel @Inject constructor(private val letterDao: MonthlyLetterDao) : ViewModel() {
+class LetterViewModel @Inject constructor(
+    private val letterDao: MonthlyLetterDao
+) : ViewModel() {
+    
     private val _letters = MutableStateFlow<List<MonthlyLetter>>(emptyList())
     val letters: StateFlow<List<MonthlyLetter>> = _letters
-    fun loadLetters() = viewModelScope.launch {
-        letterDao.getAllLetters().collect { _letters.value = it }
+    
+    fun loadLetters() {
+        viewModelScope.launch {
+            letterDao.getAllLetters().collect { list ->
+                _letters.value = list
+            }
+        }
     }
 }

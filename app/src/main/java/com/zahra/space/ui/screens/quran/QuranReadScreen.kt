@@ -15,7 +15,6 @@ import com.zahra.space.viewmodel.QuranViewModel
 fun QuranReadScreen(surahId: Int, verseId: Int) {
     val vm: QuranViewModel = viewModel()
     val ayat by vm.currentAyat.collectAsState()
-    val surahName by vm.currentSurahName.collectAsState()
     
     LaunchedEffect(surahId, verseId) {
         vm.loadAyat(surahId, verseId)
@@ -24,7 +23,7 @@ fun QuranReadScreen(surahId: Int, verseId: Int) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("$surahName - Ayat $verseId") }
+                title = { Text("Surah $surahId - Ayat $verseId") }
             )
         }
     ) { paddingValues ->
@@ -45,7 +44,7 @@ fun QuranReadScreen(surahId: Int, verseId: Int) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = ayat?.ayahText ?: "",
+                        text = ayat?.arabicText ?: "",
                         fontSize = 28.sp,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
@@ -53,7 +52,7 @@ fun QuranReadScreen(surahId: Int, verseId: Int) {
                     Divider(modifier = Modifier.padding(vertical = 8.dp))
                     
                     Text(
-                        text = ayat?.readText ?: "",
+                        text = ayat?.latinText ?: "",
                         fontSize = 16.sp,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
