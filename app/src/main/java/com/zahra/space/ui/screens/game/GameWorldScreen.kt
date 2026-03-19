@@ -1,5 +1,4 @@
 package com.zahra.space.ui.screens.game
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -10,39 +9,92 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.zahra.space.ui.views.GameWorldView
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameWorldScreen() {
     var balance by remember { mutableIntStateOf(1000) }
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
-    Box(Modifier.fillMaxSize()) {
-        AndroidView(factory = { ctx -> GameWorldView(ctx) }, Modifier.fillMaxSize())
-        Column(Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Card(Modifier.fillMaxWidth()) {
-                Row(Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+    
+    Box(modifier = Modifier.fillMaxSize()) {
+        AndroidView(
+            factory = { ctx -> GameWorldView(ctx) },
+            modifier = Modifier.fillMaxSize()
+        )
+        
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     Text("🏙️ Kota Zahra")
                     Text("💰 $balance")
                 }
             }
-            Spacer(Modifier.weight(1f))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button({ /* move */ }) { Text("←") }
-                Button({ /* move */ }) { Text("↑") }
-                Button({ /* move */ }) { Text("→") }
-                Button({ /* move */ }) { Text("↓") }
+            
+            Spacer(modifier = Modifier.weight(1f))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button({ }) { Text("←") }
+                Button({ }) { Text("↑") }
+                Button({ }) { Text("→") }
+                Button({ }) { Text("↓") }
             }
-            Spacer(Modifier.height(8.dp))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button({ dialogMessage = "Halo!"; showDialog = true }) { Text("💬 Ngobrol") }
-                Button({ dialogMessage = "Masjid"; showDialog = true }) { Text("🕌 Masjid") }
-                Button({ dialogMessage = "Restoran"; showDialog = true }) { Text("🍳 Resto") }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button({
+                    dialogMessage = "Halo!"
+                    showDialog = true
+                }) {
+                    Text("💬 Ngobrol")
+                }
+                Button({
+                    dialogMessage = "Masjid"
+                    showDialog = true
+                }) {
+                    Text("🕌 Masjid")
+                }
+                Button({
+                    dialogMessage = "Restoran"
+                    showDialog = true
+                }) {
+                    Text("🍳 Resto")
+                }
             }
+            
             if (showDialog) {
-                Spacer(Modifier.height(8.dp))
-                Card(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(16.dp)) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
                         Text(dialogMessage)
-                        Button({ showDialog = false }, Modifier.align(Alignment.End)) { Text("Tutup") }
+                        Button(
+                            onClick = { showDialog = false },
+                            modifier = Modifier.align(Alignment.End)
+                        ) {
+                            Text("Tutup")
+                        }
                     }
                 }
             }

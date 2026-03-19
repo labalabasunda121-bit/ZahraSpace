@@ -1,8 +1,9 @@
 package com.zahra.space.ui.screens.todo
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
-import androidx.compose.material3.Text
+
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoDetailScreen(todoId: Long) {
     Text("Detail Todo #$todoId")

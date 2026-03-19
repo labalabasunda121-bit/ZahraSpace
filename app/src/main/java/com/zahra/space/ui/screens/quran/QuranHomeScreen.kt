@@ -1,5 +1,5 @@
 package com.zahra.space.ui.screens.quran
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.zahra.space.viewmodel.QuranViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuranHomeScreen(
     navController: NavController,
@@ -19,17 +20,50 @@ fun QuranHomeScreen(
 ) {
     val vm: QuranViewModel = viewModel()
     val surahList by vm.surahList.collectAsState()
-    LaunchedEffect(Unit) { vm.loadSurahList() }
-    Scaffold(topBar = { TopAppBar(title = { Text("Al-Qur'an") }) }) { padding ->
-        LazyColumn(Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
+    val surahNames by vm.surahNames.collectAsState()
+    
+    LaunchedEffect(Unit) {
+        vm.loadSurahList()
+        vm.loadSurahNames()
+    }
+    
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Al-Qur'an") }
+            )
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             items(surahList) { surah ->
-                Card(Modifier.fillMaxWidth().padding(vertical = 4.dp), onClick = { onNavigateToRead(surah.suraId, 1) }) {
-                    Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                val name = surahNames[surah.suraId] ?: SurahInfo("Surah ${surah.suraId}", "")
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { onNavigateToRead(surah.suraId, 1) }
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                         Column {
-                            Text("${surah.suraId}. ${surah.surahNameLatin}", style = MaterialTheme.typography.titleMedium)
-                            Text("${surah.surahName}", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary)
+                            Text(
+                                text = "${surah.suraId}. ${name.latin}",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Text(
+                                text = name.arabic,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
                         }
-                        // Hafalan icon bisa ditambahkan nanti
                     }
                 }
             }

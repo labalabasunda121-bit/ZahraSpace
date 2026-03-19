@@ -1,9 +1,10 @@
 package com.zahra.space.ui.screens.fitness
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
-import androidx.compose.material3.Text
+
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FitnessHomeScreen() {
-    Text("Fitness Tracker (dalam pengembangan)")
+    Text("Fitness Tracker - Coming Soon")
 }
