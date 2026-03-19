@@ -37,7 +37,7 @@ class DashboardViewModel @Inject constructor(
     private val _todayChecklist = MutableStateFlow<Map<String, Boolean>>(emptyMap())
     val todayChecklist: StateFlow<Map<String, Boolean>> = _todayChecklist
     
-    private val _petStatus = MutableStateFlow(Pet().state.value)
+    private val _petStatus = MutableStateFlow(Pet.PetState())
     val petStatus: StateFlow<Pet.PetState> = _petStatus
     
     private val _calendarColors = MutableStateFlow<Map<String, String>>(emptyMap())

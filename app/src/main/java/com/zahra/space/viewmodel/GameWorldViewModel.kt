@@ -40,7 +40,7 @@ class GameWorldViewModel @Inject constructor(
     private val _totalMessages = MutableStateFlow(0)
     val totalMessages: StateFlow<Int> = _totalMessages
     
-    private val _restaurant = MutableStateFlow(Restaurant().state.value)
+    private val _restaurant = MutableStateFlow(Restaurant.RestaurantState())
     val restaurant: StateFlow<Restaurant.RestaurantState> = _restaurant
     
     init {

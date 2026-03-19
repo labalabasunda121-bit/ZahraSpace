@@ -358,10 +358,10 @@ fun GameWorldScreen() {
 // Filament View for 3D rendering
 class FilamentView(context: Context) : SurfaceView(context), Choreographer.FrameCallback {
     private val engine = Engine.create()
-    private val renderer = Renderer(engine)
-    private val scene = Scene(engine)
-    private val view = View(engine)
-    private val camera = Camera(engine)
+    private val renderer = engine.createRenderer()
+    private val scene = engine.createScene()
+    private val view = engine.createView()
+    private val camera = engine.createCamera(engine.entityManager.create())
     private val uiHelper = UiHelper(UiHelper.ContextErrorPolicy.DONT_CHECK)
     
     // Placeholder for models - will be loaded from assets when available
