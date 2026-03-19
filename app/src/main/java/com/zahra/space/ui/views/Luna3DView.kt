@@ -15,9 +15,7 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
     private val view = engine.createView()
     private val camera = engine.createCamera(engine.entityManager.create())
     private val uiHelper = UiHelper(UiHelper.ContextErrorPolicy.DONT_CHECK)
-    private val gltfio = Gltfio()
-    private val assetLoader = AssetLoader(engine, MaterialProvider(), EntityManager.get())
-    private var asset: FilamentAsset? = null
+    private val assetLoader = AssetLoader(engine, UbershaderLoader(), EntityManager.get())
 
     init {
         uiHelper.attachTo(this)
@@ -25,26 +23,46 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
         camera.lookAt(0.0, 1.0, 3.0, 0.0, 0.5, 0.0, 0.0, 1.0, 0.0)
         view.camera = camera
         view.scene = scene
+
         val light = EntityManager.get().create()
-        LightManager.Builder(LightManager.Type.DIRECTIONAL).color(1f,1f,1f).intensity(100000f).direction(0f,-1f,0f).build(engine,light)
+        LightManager.Builder(LightManager.Type.DIRECTIONAL)
+            .color(1f, 1f, 1f)
+            .intensity(100000f)
+            .direction(0f, -1f, 0f)
+            .build(engine, light)
         scene.addEntity(light)
+
         loadModel()
         Choreographer.getInstance().postFrameCallback(this)
     }
+
     private fun loadModel() {
         try {
-            val bytes = context.assets.open("models/luna.gltf").readBytes()
-            asset = assetLoader.createAssetFromBuffer(ByteBuffer.wrap(bytes))
-            asset?.let { scene.addEntities(it.entities) }
-        } catch (e: Exception) { e.printStackTrace() }
+            context.assets.open("models/luna.gltf").use { inputStream ->
+                val bytes = inputStream.readBytes()
+                assetLoader.createAssetFromBuffer(ByteBuffer.wrap(bytes))?.let {
+                    scene.addEntities(it.entities)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
+
     override fun doFrame(frameTimeNanos: Long) {
-        if (uiHelper.isReadyToRender) renderer.render(view)
+        if (uiHelper.isReadyToRender) {
+            renderer.render(view)
+        }
         Choreographer.getInstance().postFrameCallback(this)
     }
+
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         Choreographer.getInstance().removeFrameCallback(this)
-        engine.destroyRenderer(renderer); engine.destroyView(view); engine.destroyScene(scene); engine.destroyCamera(camera); engine.destroy()
+        engine.destroyRenderer(renderer)
+        engine.destroyView(view)
+        engine.destroyScene(scene)
+        engine.destroyCamera(camera)
+        engine.destroy()
     }
 }
