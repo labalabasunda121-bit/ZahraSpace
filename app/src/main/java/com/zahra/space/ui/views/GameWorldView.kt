@@ -11,7 +11,6 @@ import android.view.SurfaceView
 class GameWorldView(context: Context) : SurfaceView(context) {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private var rotationAngle = 0f
 
     init {
         // Set background color (sky)
@@ -25,10 +24,9 @@ class GameWorldView(context: Context) : SurfaceView(context) {
         val height = height.toFloat()
 
         // Draw ground
-        val groundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.rgb(34, 139, 34) // Forest green
-            style = Paint.Style.FILL
-        }
+        val groundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        groundPaint.color = Color.rgb(34, 139, 34) // Forest green
+        groundPaint.style = Paint.Style.FILL
         
         val groundPath = Path()
         groundPath.moveTo(0f, height * 0.6f)
@@ -58,19 +56,17 @@ class GameWorldView(context: Context) : SurfaceView(context) {
     }
 
     private fun drawBuilding(canvas: Canvas, x: Float, y: Float, width: Float, height: Float, color: Int) {
-        val buildingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            this.color = color
-            style = Paint.Style.FILL
-        }
+        val buildingPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        buildingPaint.color = color
+        buildingPaint.style = Paint.Style.FILL
         
         // Main building
         canvas.drawRect(x - width/2, y - height, x + width/2, y, buildingPaint)
         
         // Windows
-        val windowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.YELLOW
-            style = Paint.Style.FILL
-        }
+        val windowPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        windowPaint.color = Color.YELLOW
+        windowPaint.style = Paint.Style.FILL
         
         for (i in 1..3) {
             for (j in 1..4) {
@@ -86,19 +82,18 @@ class GameWorldView(context: Context) : SurfaceView(context) {
     }
     
     private fun drawMosque(canvas: Canvas, x: Float, y: Float, size: Float) {
-        val mosquePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.WHITE
-            style = Paint.Style.FILL
-        }
+        val mosquePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        mosquePaint.color = Color.WHITE
+        mosquePaint.style = Paint.Style.FILL
         
         // Main building
         canvas.drawRect(x - size/2, y - size*0.7f, x + size/2, y, mosquePaint)
         
         // Dome
-        val domePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.rgb(255, 215, 0) // Gold
-            style = Paint.Style.FILL
-        }
+        val domePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        domePaint.color = Color.rgb(255, 215, 0) // Gold
+        domePaint.style = Paint.Style.FILL
+        
         canvas.drawCircle(x, y - size*0.8f, size*0.3f, domePaint)
         
         // Minarets
@@ -107,48 +102,49 @@ class GameWorldView(context: Context) : SurfaceView(context) {
     }
     
     private fun drawCharacter(canvas: Canvas, x: Float, y: Float) {
-        val charPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        
         // Body (hijab)
-        charPaint.color = Color.BLACK
-        canvas.drawCircle(x, y - 30f, 20f, charPaint)
+        val hijabPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        hijabPaint.color = Color.BLACK
+        canvas.drawCircle(x, y - 30f, 20f, hijabPaint)
         
         // Face
-        charPaint.color = Color.rgb(255, 224, 189) // Skin color
-        canvas.drawCircle(x, y - 35f, 10f, charPaint)
+        val facePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        facePaint.color = Color.rgb(255, 224, 189) // Skin color
+        canvas.drawCircle(x, y - 35f, 10f, facePaint)
         
         // Eyes
-        charPaint.color = Color.BLACK
-        canvas.drawCircle(x - 4f, y - 38f, 2f, charPaint)
-        canvas.drawCircle(x + 4f, y - 38f, 2f, charPaint)
+        val eyePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        eyePaint.color = Color.BLACK
+        canvas.drawCircle(x - 4f, y - 38f, 2f, eyePaint)
+        canvas.drawCircle(x + 4f, y - 38f, 2f, eyePaint)
     }
     
     private fun drawLuna(canvas: Canvas, x: Float, y: Float) {
-        val lunaPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        
         // Body
-        lunaPaint.color = Color.WHITE
-        canvas.drawCircle(x, y - 20f, 15f, lunaPaint)
+        val bodyPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        bodyPaint.color = Color.WHITE
+        canvas.drawCircle(x, y - 20f, 15f, bodyPaint)
         
         // Head
-        canvas.drawCircle(x, y - 35f, 10f, lunaPaint)
+        canvas.drawCircle(x, y - 35f, 10f, bodyPaint)
         
         // Ears
-        lunaPaint.color = Color.rgb(255, 200, 200) // Pinkish
-        canvas.drawCircle(x - 8f, y - 43f, 5f, lunaPaint)
-        canvas.drawCircle(x + 8f, y - 43f, 5f, lunaPaint)
+        val earPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        earPaint.color = Color.rgb(255, 200, 200) // Pinkish
+        canvas.drawCircle(x - 8f, y - 43f, 5f, earPaint)
+        canvas.drawCircle(x + 8f, y - 43f, 5f, earPaint)
         
         // Eyes
-        lunaPaint.color = Color.BLACK
-        canvas.drawCircle(x - 4f, y - 37f, 2f, lunaPaint)
-        canvas.drawCircle(x + 4f, y - 37f, 2f, lunaPaint)
+        val eyePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        eyePaint.color = Color.BLACK
+        canvas.drawCircle(x - 4f, y - 37f, 2f, eyePaint)
+        canvas.drawCircle(x + 4f, y - 37f, 2f, eyePaint)
     }
     
     private fun drawSun(canvas: Canvas, x: Float, y: Float) {
-        val sunPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.rgb(255, 165, 0) // Orange
-            style = Paint.Style.FILL
-        }
+        val sunPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        sunPaint.color = Color.rgb(255, 165, 0) // Orange
+        sunPaint.style = Paint.Style.FILL
         canvas.drawCircle(x, y, 40f, sunPaint)
     }
 }
