@@ -1,5 +1,7 @@
 package com.zahra.space.viewmodel
 
+import com.zahra.space.game.PetState
+import com.zahra.space.data.entity.DailyChecklist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zahra.space.data.dao.UserDao
@@ -38,8 +40,8 @@ class DashboardViewModel @Inject constructor(
     private val _todayChecklist = MutableStateFlow<Map<String, Boolean>>(emptyMap())
     val todayChecklist: StateFlow<Map<String, Boolean>> = _todayChecklist
     
-    private val _petStatus = MutableStateFlow(Pet.PetState())
-    val petStatus: StateFlow<Pet.PetState> = _petStatus
+    private val _petStatus = MutableStateFlow(PetState())
+    val petStatus: StateFlow<PetState> = _petStatus
     
     private val _calendarColors = MutableStateFlow<Map<String, String>>(emptyMap())
     val calendarColors: StateFlow<Map<String, String>> = _calendarColors
@@ -121,7 +123,7 @@ class DashboardViewModel @Inject constructor(
             petDao.getPets().collect { pets ->
                 if (pets.isNotEmpty()) {
                     val pet = pets.first()
-                    _petStatus.value = Pet.PetState(
+                    _petStatus.value = PetState(
                         name = pet.name,
                         type = pet.type,
                         hunger = pet.hunger,

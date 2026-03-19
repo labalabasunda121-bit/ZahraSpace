@@ -1,5 +1,6 @@
 package com.zahra.space.viewmodel
 
+import com.zahra.space.game.RestaurantState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zahra.space.data.dao.UserDao
@@ -41,8 +42,8 @@ class GameWorldViewModel @Inject constructor(
     private val _totalMessages = MutableStateFlow(0)
     val totalMessages: StateFlow<Int> = _totalMessages
     
-    private val _restaurant = MutableStateFlow(Restaurant.RestaurantState())
-    val restaurant: StateFlow<Restaurant.RestaurantState> = _restaurant
+    private val _restaurant = MutableStateFlow(RestaurantState())
+    val restaurant: StateFlow<RestaurantState> = _restaurant
     
     init {
         loadUserBalance()
@@ -109,7 +110,7 @@ class GameWorldViewModel @Inject constructor(
         viewModelScope.launch {
             restaurantDao.getRestaurant().collect { restaurant ->
                 if (restaurant != null) {
-                    _restaurant.value = Restaurant.RestaurantState(
+                        _restaurant.value = RestaurantState(
                         level = restaurant.level,
                         experience = restaurant.experience,
                         balance = restaurant.balance,
