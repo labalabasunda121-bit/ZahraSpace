@@ -6,9 +6,9 @@ plugins {
 }
 
 android {
-    packagingOptions {
-        resources.excludes.add("META-INF/**")
-        resources.excludes.add("**/*.kotlin_module")
+    packaging {
+        resources.exclude.add("META-INF/**")
+        resources.exclude.add("**/*.kotlin_module")
     }
     namespace = "com.zahra.space"
     compileSdk = 34
@@ -59,6 +59,7 @@ android {
 }
 
 dependencies {
+    implementation("com.jakewharton.timber:timber:5.0.1")
     implementation("com.jakewharton.timber:timber:5.0.1")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")

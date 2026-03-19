@@ -13,3 +13,6 @@ interface UserDao {
     @Query("UPDATE users SET imanLevel = imanLevel + :change WHERE id = '1'") suspend fun updateIman(change: Int)
     @Query("UPDATE users SET lastActive = :timestamp WHERE id = '1'") suspend fun updateLastActive(timestamp: Long)
 }
+
+    @Query("DELETE FROM users")
+    suspend fun deleteAll()
