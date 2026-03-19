@@ -19,6 +19,12 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
 
     init {
         uiHelper.attachTo(this)
+        setupScene()
+        loadModel()
+        Choreographer.getInstance().postFrameCallback(this)
+    }
+
+    private fun setupScene() {
         camera.setProjection(45.0, 1.0, 0.1, 100.0, Camera.Fov.VERTICAL)
         camera.lookAt(0.0, 1.0, 3.0, 0.0, 0.5, 0.0, 0.0, 1.0, 0.0)
         view.camera = camera
@@ -31,21 +37,19 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
             .direction(0f, -1f, 0f)
             .build(engine, light)
         scene.addEntity(light)
-
-        loadModel()
-        Choreographer.getInstance().postFrameCallback(this)
     }
 
     private fun loadModel() {
         try {
             context.assets.open("models/luna.gltf").use { inputStream ->
                 val bytes = inputStream.readBytes()
-        assetLoader.createAsset(buffer)?.let { scene.addEntities(it.entities) }
-                    scene.addEntities(it.entities)
+                val buffer = ByteBuffer.wrap(bytes)
+                assetLoader.createAsset(buffer)?.let { asset ->
+                    scene.addEntities(asset.entities)
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            // Log error jika perlu, tapi jangan sampai crash
         }
     }
 
@@ -62,7 +66,7 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
         engine.destroyRenderer(renderer)
         engine.destroyView(view)
         engine.destroyScene(scene)
-        camera.destroy(engine)
+        engine.destroyCamera(camera)
         engine.destroy()
     }
 }
