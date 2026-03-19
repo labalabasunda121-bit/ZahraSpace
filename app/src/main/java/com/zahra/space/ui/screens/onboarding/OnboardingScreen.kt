@@ -1,25 +1,28 @@
 package com.zahra.space.ui.screens.onboarding
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zahra.space.data.entity.User
-import java.text.SimpleDateFormat
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingScreen(onComplete: (User) -> Unit) {
+    val context = LocalContext.current
     var step by remember { mutableIntStateOf(1) }
     var name by remember { mutableStateOf("") }
-    var birthDate by remember { mutableStateOf("") }
-    var avatar by remember { mutableStateOf("👩") }
+    var selectedAvatar by remember { mutableStateOf("👩") }
+    var selectedDate by remember { mutableStateOf<Date?>(null) }
+    
+    val avatars = listOf("👧", "👩", "🧕")
+    val calendar = Calendar.getInstance()
     
     Column(
         modifier = Modifier
@@ -73,24 +76,40 @@ fun OnboardingScreen(onComplete: (User) -> Unit) {
             
             3 -> {
                 Text(
-                    text = "Kapan kamu lahir? (DD/MM/YYYY)",
+                    text = "Kapan kamu lahir?",
                     fontSize = 18.sp
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                OutlinedTextField(
-                    value = birthDate,
-                    onValueChange = { birthDate = it },
-                    placeholder = { Text("27/09/1999") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(32.dp))
+                
                 Button(
-                    onClick = { step = 4 },
-                    enabled = birthDate.length == 10,
+                    onClick = {
+                        DatePickerDialog(
+                            context,
+                            { _, year, month, dayOfMonth ->
+                                calendar.set(year, month, dayOfMonth)
+                                selectedDate = calendar.time
+                                step = 4
+                            },
+                            calendar.get(Calendar.YEAR),
+                            calendar.get(Calendar.MONTH),
+                            calendar.get(Calendar.DAY_OF_MONTH)
+                        ).show()
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("LANJUT")
+                    Text(if (selectedDate == null) "Pilih Tanggal" else "✓ Tanggal Dipilih")
+                }
+                
+                Spacer(modifier = Modifier.height(32.dp))
+                
+                Button(
+                    onClick = { step = 2 },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Text("KEMBALI")
                 }
             }
             
@@ -100,44 +119,45 @@ fun OnboardingScreen(onComplete: (User) -> Unit) {
                     fontSize = 18.sp
                 )
                 Spacer(modifier = Modifier.height(24.dp))
+                
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    listOf("👧", "👩", "🧕").forEach { a ->
+                    avatars.forEach { avatar ->
                         Card(
-                            onClick = { avatar = a },
+                            onClick = { selectedAvatar = avatar },
                             colors = CardDefaults.cardColors(
-                                containerColor = if (avatar == a)
+                                containerColor = if (selectedAvatar == avatar)
                                     MaterialTheme.colorScheme.primaryContainer
                                 else
                                     MaterialTheme.colorScheme.surface
                             )
                         ) {
                             Text(
-                                text = a,
+                                text = avatar,
                                 fontSize = 48.sp,
                                 modifier = Modifier.padding(16.dp)
                             )
                         }
                     }
                 }
+                
                 Spacer(modifier = Modifier.height(32.dp))
+                
                 Button(
                     onClick = {
-                        val date = try {
-                            SimpleDateFormat("dd/MM/yyyy", Locale("id")).parse(birthDate) ?: Date()
-                        } catch (e: Exception) {
-                            Date()
-                        }
-                        onComplete(
-                            User(
+                        try {
+                            val user = User(
                                 name = name,
-                                birthDate = date.time,
-                                avatar = avatar,
+                                birthDate = selectedDate?.time ?: System.currentTimeMillis(),
+                                avatar = selectedAvatar,
                                 installDate = System.currentTimeMillis()
                             )
-                        )
+                            onComplete(user)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
