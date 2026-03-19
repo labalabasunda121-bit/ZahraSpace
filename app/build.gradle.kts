@@ -7,8 +7,8 @@ plugins {
 
 android {
     packaging {
-        resources.exclude.add("META-INF/**")
-        resources.exclude.add("**/*.kotlin_module")
+        resources.exclude("META-INF/**")
+        resources.exclude("**/*.kotlin_module")
     }
     namespace = "com.zahra.space"
     compileSdk = 34
