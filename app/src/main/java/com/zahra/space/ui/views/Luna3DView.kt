@@ -19,7 +19,7 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
     init {
         uiHelper.attachTo(this)
         setupScene()
-        createLunaShape()
+        createLuna()
         Choreographer.getInstance().postFrameCallback(this)
     }
 
@@ -38,30 +38,35 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
         scene.addEntity(light)
     }
 
-    private fun createLunaShape() {
+    private fun createLuna() {
         // Body
-        createSphere(0f, 0f, 0f, 0.6f, floatArrayOf(1f, 0.9f, 0.9f))
+        createEllipsoid(0f, 0f, 0f, 0.6f, 0.4f, 0.6f, 1f, 0.9f, 0.9f)
+        
         // Head
-        createSphere(0f, 0.8f, 0f, 0.4f, floatArrayOf(1f, 0.9f, 0.9f))
+        createSphere(0f, 0.7f, 0f, 0.3f, 1f, 0.9f, 0.9f)
+        
         // Ears
-        createCone(-0.3f, 1.1f, 0f, 0.2f, 0.3f, floatArrayOf(1f, 0.8f, 0.8f))
-        createCone(0.3f, 1.1f, 0f, 0.2f, 0.3f, floatArrayOf(1f, 0.8f, 0.8f))
+        createCone(-0.2f, 1.0f, 0f, 0.15f, 0.25f, 1f, 0.8f, 0.8f)
+        createCone(0.2f, 1.0f, 0f, 0.15f, 0.25f, 1f, 0.8f, 0.8f)
+        
         // Tail
-        createCone(-0.7f, -0.3f, -0.3f, 0.15f, 0.6f, floatArrayOf(1f, 0.8f, 0.8f))
+        createCone(-0.6f, -0.2f, -0.3f, 0.1f, 0.4f, 1f, 0.8f, 0.8f)
+        
+        // Eyes
+        createSphere(-0.1f, 0.8f, 0.2f, 0.05f, 0f, 0f, 0f)
+        createSphere(0.1f, 0.8f, 0.2f, 0.05f, 0f, 0f, 0f)
     }
-
-    private fun createSphere(x: Float, y: Float, z: Float, radius: Float, color: FloatArray) {
-        // Simplified: use a cube as sphere placeholder
-        val r = radius
-        val verts = floatArrayOf(
-            x - r, y - r, z - r,
-            x + r, y - r, z - r,
-            x + r, y + r, z - r,
-            x - r, y + r, z - r,
-            x - r, y - r, z + r,
-            x + r, y - r, z + r,
-            x + r, y + r, z + r,
-            x - r, y + r, z + r
+    
+    private fun createSphere(x: Float, y: Float, z: Float, radius: Float, r: Float, g: Float, b: Float) {
+        val vertices = floatArrayOf(
+            x - radius, y - radius, z - radius,
+            x + radius, y - radius, z - radius,
+            x + radius, y + radius, z - radius,
+            x - radius, y + radius, z - radius,
+            x - radius, y - radius, z + radius,
+            x + radius, y - radius, z + radius,
+            x + radius, y + radius, z + radius,
+            x - radius, y + radius, z + radius
         )
         
         val indices = shortArrayOf(
@@ -70,13 +75,35 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
             0,3,7, 0,7,4, 1,2,6, 1,6,5
         )
         
-        createMesh(verts, indices, color)
+        createMesh(vertices, indices, r, g, b)
     }
-
-    private fun createCone(x: Float, y: Float, z: Float, radius: Float, height: Float, color: FloatArray) {
-        // Simplified: use a pyramid-like shape
+    
+    private fun createEllipsoid(x: Float, y: Float, z: Float, 
+                                 rx: Float, ry: Float, rz: Float,
+                                 r: Float, g: Float, b: Float) {
+        val vertices = floatArrayOf(
+            x - rx, y - ry, z - rz,
+            x + rx, y - ry, z - rz,
+            x + rx, y + ry, z - rz,
+            x - rx, y + ry, z - rz,
+            x - rx, y - ry, z + rz,
+            x + rx, y - ry, z + rz,
+            x + rx, y + ry, z + rz,
+            x - rx, y + ry, z + rz
+        )
+        
+        val indices = shortArrayOf(
+            0,1,2, 0,2,3, 4,5,6, 4,6,7,
+            0,1,5, 0,5,4, 2,3,7, 2,7,6,
+            0,3,7, 0,7,4, 1,2,6, 1,6,5
+        )
+        
+        createMesh(vertices, indices, r, g, b)
+    }
+    
+    private fun createCone(x: Float, y: Float, z: Float, radius: Float, height: Float, r: Float, g: Float, b: Float) {
         val hh = height / 2
-        val verts = floatArrayOf(
+        val vertices = floatArrayOf(
             x - radius, y - hh, z - radius,
             x + radius, y - hh, z - radius,
             x + radius, y - hh, z + radius,
@@ -89,59 +116,59 @@ class Luna3DView(context: Context) : SurfaceView(context), Choreographer.FrameCa
             0,1,2, 0,2,3
         )
         
-        createMesh(verts, indices, color)
+        createMesh(vertices, indices, r, g, b)
     }
-
-    private fun createMesh(vertices: FloatArray, indices: ShortArray, color: FloatArray) {
+    
+    private fun createMesh(vertices: FloatArray, indices: ShortArray, r: Float, g: Float, b: Float) {
         val vertexBuffer = VertexBuffer.Builder()
             .vertexCount(vertices.size / 3)
             .bufferCount(1)
             .attribute(VertexBuffer.VertexAttribute.POSITION, 0, VertexBuffer.AttributeType.FLOAT3, 0, 12)
             .build(engine)
-
+        
         val floatBuffer = ByteBuffer.allocateDirect(vertices.size * 4)
             .order(ByteOrder.nativeOrder())
             .asFloatBuffer()
             .put(vertices)
             .rewind()
         vertexBuffer.setBufferAt(engine, 0, floatBuffer)
-
+        
         val indexBuffer = IndexBuffer.Builder()
             .indexCount(indices.size)
             .bufferType(IndexBuffer.Builder.IndexType.USHORT)
             .build(engine)
-
+        
         val shortBuffer = ByteBuffer.allocateDirect(indices.size * 2)
             .order(ByteOrder.nativeOrder())
             .asShortBuffer()
             .put(indices)
             .rewind()
         indexBuffer.setBuffer(engine, shortBuffer)
-
+        
         val material = Material.Builder()
             .payload(engine, """
                 {
                     "material": {
-                        "name": "simple",
+                        "name": "luna",
                         "shadingModel": "lit",
                         "parameters": [
                             {
                                 "name": "baseColor",
                                 "type": "float3",
-                                "default": [${color[0]}, ${color[1]}, ${color[2]}]
+                                "default": [$r, $g, $b]
                             }
                         ]
                     }
                 }
             """.toByteArray())
             .build(engine)
-
+        
         val renderable = EntityManager.get().create()
         RenderableManager.Builder(1)
             .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBuffer, indexBuffer, 0, indices.size)
             .material(0, material.defaultInstance)
             .build(engine, renderable)
-
+        
         scene.addEntity(renderable)
     }
 
