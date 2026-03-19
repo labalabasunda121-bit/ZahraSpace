@@ -1,36 +1,78 @@
-name: Build ZahraSpace APK
+name: Build ZahraSpace APK (with auto Gradle wrapper)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [17]
+    
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up JDK 17
+        with:
+          lfs: true
+          fetch-depth: 0
+      
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
           distribution: 'temurin'
-
+          java-version: ${{ matrix.java }}
+      
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon
-
+      
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      
+      - name: Generate Gradle Wrapper (if not exists)
+        run: |
+          if [ ! -f gradlew ]; then
+            echo "📦 Generating Gradle wrapper..."
+            # Deteksi gradle version dari build.gradle.kts
+            GRADLE_VERSION=$(grep -oP '(?<=gradle-)[0-9.]+(?=-bin)' gradle/wrapper/gradle-wrapper.properties 2>/dev/null || echo "8.11")
+            gradle wrapper --gradle-version $GRADLE_VERSION
+            echo "✅ Gradle wrapper generated (version $GRADLE_VERSION)"
+          else
+            echo "✅ Gradle wrapper already exists"
+            chmod +x gradlew
+          fi
+      
+      - name: Check Gradle wrapper
+        run: |
+          ./gradlew --version
+          ./gradlew tasks --dry-run
+      
+      - name: Build with Gradle
+        run: |
+          chmod +x gradlew
+          ./gradlew clean assembleDebug --stacktrace --no-daemon
+      
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ZahraSpace-Debug
+          name: ZahraSpace-${{ runner.os }}-${{ github.sha }}
           path: app/build/outputs/apk/debug/app-debug.apk
+      
+      - name: Upload build reports (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-reports
+          path: app/build/reports/
