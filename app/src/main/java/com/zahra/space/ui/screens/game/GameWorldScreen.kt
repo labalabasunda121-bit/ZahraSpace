@@ -1,5 +1,8 @@
 package com.zahra.space.ui.screens.game
 
+import android.graphics.Rect
+import com.google.android.filament.VertexAttribute
+import com.google.android.filament.Renderable
 import kotlinx.coroutines.delay
 import android.opengl.Matrix
 import androidx.compose.foundation.layout.*
@@ -370,8 +373,6 @@ class FilamentView(context: Context) : SurfaceView(context), Choreographer.Frame
     
     init {
         uiHelper.attachTo(this)
-        uiHelper.renderCallback = object : UiHelper.RendererCallback {
-            override fun onNativeWindowChanged(surface: SurfaceView) {
                 // Handle surface change
             }
             override fun onDetachedFromSurface() {
@@ -380,7 +381,7 @@ class FilamentView(context: Context) : SurfaceView(context), Choreographer.Frame
             override fun onResized(width: Int, height: Int) {
                 view.setViewport(0, 0, width, height)
             }
-        }
+            view.setViewport(Rect(0, 0, width, height))
         
         setupScene()
         Choreographer.getInstance().postFrameCallback(this)
@@ -423,8 +424,6 @@ class FilamentView(context: Context) : SurfaceView(context), Choreographer.Frame
             .bufferCount(1)
             .attribute(VertexAttribute.POSITION, 0, VertexBuffer.AttributeType.FLOAT3, 0, 24)
             .attribute(VertexAttribute.COLOR, 0, VertexBuffer.AttributeType.FLOAT3, 12, 24)
-            .build(engine)
-        vertexBuffer.setBufferAt(engine, 0, ByteBuffer.wrap(vertexData.toByteArray()))
         
         val indexBuffer = IndexBuffer.Builder()
             .indexCount(6)
