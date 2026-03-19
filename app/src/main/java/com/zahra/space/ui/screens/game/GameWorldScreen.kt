@@ -38,7 +38,7 @@ fun GameWorldScreen() {
     var gameTime by remember { mutableLongStateOf(0L) }
     var weather by remember { mutableStateOf("Cerah") }
     var balance by remember { mutableIntStateOf(0) }
-    
+
     // Hidden messages for NPC interactions
     val hiddenMessages = listOf(
         "Ada yang titip pesan: 'Jangan lupa bahagia, walau jauh.'",
@@ -57,7 +57,7 @@ fun GameWorldScreen() {
         "Setiap senja, aku mendoakanmu.",
         "Jangan pernah merasa sendiri."
     )
-    
+
     val npcMessages = listOf(
         "Assalamu'alaikum, Zahra!",
         "Jangan lupa sholat ya...",
@@ -72,18 +72,18 @@ fun GameWorldScreen() {
         "Ada diskon di supermarket loh!",
         "Restoranmu ramai sekali hari ini."
     )
-    
+
     // Prayer times in game (every 6 hours)
     val prayerTimes = listOf("Subuh", "Dzuhur", "Ashar", "Maghrib", "Isya")
     var currentPrayer by remember { mutableStateOf("") }
     var showPrayerNotif by remember { mutableStateOf(false) }
-    
+
     // Game time progression (1 real minute = 1 game hour)
     LaunchedEffect(Unit) {
         while (true) {
             delay(60000) // 1 real minute
             gameTime += 3600000 // 1 game hour
-            
+
             // Check prayer times (every 6 game hours)
             val gameHour = (gameTime / 3600000) % 24
             if (gameHour.toInt() % 6 == 0 && !showPrayerNotif) {
@@ -101,7 +101,7 @@ fun GameWorldScreen() {
             }
         }
     }
-    
+
     // Weather system
     LaunchedEffect(Unit) {
         val weathers = listOf("Cerah", "Berawan", "Hujan Ringan", "Hujan Deras", "Mendung")
@@ -110,7 +110,7 @@ fun GameWorldScreen() {
             weather = weathers.random()
         }
     }
-    
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -123,7 +123,7 @@ fun GameWorldScreen() {
             },
             modifier = Modifier.fillMaxSize()
         )
-        
+
         // UI Overlay
         Column(
             modifier = Modifier
@@ -154,9 +154,9 @@ fun GameWorldScreen() {
                     Text("🌤️ $weather", style = MaterialTheme.typography.bodySmall)
                 }
             }
-            
+
             Spacer(modifier = Modifier.weight(1f))
-            
+
             // Prayer notification
             if (showPrayerNotif) {
                 Card(
@@ -170,12 +170,12 @@ fun GameWorldScreen() {
                     Column(
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        Text("🕌 WAKTU SHOLAT $currentPrayer", 
+                        Text("🕌 WAKTU SHOLAT $currentPrayer",
                              style = MaterialTheme.typography.titleLarge)
                         Text("Ayo ke masjid!", style = MaterialTheme.typography.bodyLarge)
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly
@@ -200,7 +200,7 @@ fun GameWorldScreen() {
                     }
                 }
             }
-            
+
             // Hidden message indicator (F)
             if (interactionCount % 7 == 0 && interactionCount > 0) {
                 Card(
@@ -213,9 +213,9 @@ fun GameWorldScreen() {
                     }
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             // NPC Interaction Dialog
             if (showDialog) {
                 Card(
@@ -227,9 +227,9 @@ fun GameWorldScreen() {
                         modifier = Modifier.padding(16.dp)
                     ) {
                         Text(dialogMessage, style = MaterialTheme.typography.bodyLarge)
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.End
@@ -243,7 +243,7 @@ fun GameWorldScreen() {
                     }
                 }
             }
-            
+
             // Controls
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -274,9 +274,9 @@ fun GameWorldScreen() {
                     Text("↓")
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             // Action Buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -300,7 +300,7 @@ fun GameWorldScreen() {
                 ) {
                     Text("💬 Ngobrol")
                 }
-                
+
                 // Visit Mosque
                 Button(
                     onClick = {
@@ -313,7 +313,7 @@ fun GameWorldScreen() {
                 ) {
                     Text("🕌 Masjid")
                 }
-                
+
                 // Visit Restaurant
                 Button(
                     onClick = {
@@ -326,7 +326,7 @@ fun GameWorldScreen() {
                 ) {
                     Text("🍳 Resto")
                 }
-                
+
                 // Visit Shop
                 Button(
                     onClick = {
@@ -340,9 +340,9 @@ fun GameWorldScreen() {
                     Text("🛒 Belanja")
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             // Return to Dashboard Button
             Button(
                 onClick = {
@@ -367,34 +367,30 @@ class FilamentView(context: Context) : SurfaceView(context), Choreographer.Frame
     private val view = engine.createView()
     private val camera = engine.createCamera(engine.entityManager.create())
     private val uiHelper = UiHelper(UiHelper.ContextErrorPolicy.DONT_CHECK)
-    
+
     // Placeholder for models - will be loaded from assets when available
     private val models = mutableListOf<Entity>()
-    
+
     init {
         uiHelper.attachTo(this)
-                // Handle surface change
-            }
-            override fun onDetachedFromSurface() {
-                // Handle detachment
-            }
-            override fun onResized(width: Int, height: Int) {
-                view.setViewport(0, 0, width, height)
-            }
-            view.setViewport(Rect(0, 0, width, height))
-        
         setupScene()
         Choreographer.getInstance().postFrameCallback(this)
     }
-    
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        Choreographer.getInstance().removeFrameCallback(this)
+        cleanup()
+    }
+
     private fun setupScene() {
         // Create camera
         camera.setProjection(45.0, 1.0, 0.1, 100.0, Camera.Fov.VERTICAL)
         camera.lookAt(0.0, 2.0, 5.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0)
-        
+
         view.camera = camera
         view.scene = scene
-        
+
         // Add ambient light
         val ambientLight = EntityManager.get().create()
         LightManager.Builder(LightManager.Type.DIRECTIONAL)
@@ -403,11 +399,11 @@ class FilamentView(context: Context) : SurfaceView(context), Choreographer.Frame
             .direction(0.0f, -1.0f, 0.0f)
             .build(engine, ambientLight)
         scene.addEntity(ambientLight)
-        
+
         // Add a simple ground plane
         createGroundPlane()
     }
-    
+
     private fun createGroundPlane() {
         // Simple ground plane for testing
         val vertexData = floatArrayOf(
@@ -416,49 +412,52 @@ class FilamentView(context: Context) : SurfaceView(context), Choreographer.Frame
             -20f, 0f,  20f,  0f, 0.5f, 0f,
              20f, 0f,  20f,  0f, 0.5f, 0f
         )
-        
+
         val indexData = shortArrayOf(0, 1, 2, 1, 3, 2)
-        
+
         val vertexBuffer = VertexBuffer.Builder()
             .vertexCount(4)
             .bufferCount(1)
             .attribute(VertexAttribute.POSITION, 0, VertexBuffer.AttributeType.FLOAT3, 0, 24)
             .attribute(VertexAttribute.COLOR, 0, VertexBuffer.AttributeType.FLOAT3, 12, 24)
-        
+            .build(engine)
+        vertexBuffer.setBufferAt(engine, 0, ByteBuffer.wrap(vertexData.toByteArray()))
+
         val indexBuffer = IndexBuffer.Builder()
             .indexCount(6)
             .bufferType(IndexBuffer.Builder.IndexType.USHORT)
             .build(engine)
         indexBuffer.setBuffer(engine, ByteBuffer.wrap(indexData.toByteArray()))
-        
-        val material = Material(engine, """
-            {
-                "material": {
-                    "name": "ground",
-                    "shadingModel": "unlit"
+
+        val material = Material.Builder()
+            .payload(engine, """
+                {
+                    "material": {
+                        "name": "ground",
+                        "shadingModel": "unlit"
+                    }
                 }
-            }
-        """.toByteArray())
-        
-        val renderable = Renderable.Builder(1)
-            .geometry(0, Renderable.PrimitiveType.TRIANGLES, vertexBuffer, indexBuffer, 0, 6)
-            .material(0, material.defaultInstance)
+            """.toByteArray())
             .build(engine)
-        
+
+        val renderable = EntityManager.get().create()
+        RenderableManager.Builder(1)
+            .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBuffer, indexBuffer, 0, 6)
+            .material(0, material.defaultInstance)
+            .build(engine, renderable)
+
         scene.addEntity(renderable)
         models.add(renderable)
     }
-    
+
     override fun doFrame(frameTimeNanos: Long) {
         if (uiHelper.isReadyToRender) {
             renderer.render(view)
         }
         Choreographer.getInstance().postFrameCallback(this)
     }
-    
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        Choreographer.getInstance().removeFrameCallback(this)
+
+    private fun cleanup() {
         models.forEach { engine.destroyEntity(it) }
         engine.destroyRenderer(renderer)
         engine.destroyView(view)
