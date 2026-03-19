@@ -1,4 +1,5 @@
 package com.zahra.space.ui.screens.game
+@file:Suppress("ExperimentalMaterial3Api")
 
 import android.graphics.Rect
 import android.opengl.Matrix
@@ -332,7 +333,7 @@ class FilamentView(context: Context) : SurfaceView(context), Choreographer.Frame
         engine.destroyRenderer(renderer)
         engine.destroyView(view)
         engine.destroyScene(scene)
-        engine.destroyCamera(camera)
+        camera.destroy(engine)
         engine.destroy()
     }
 }

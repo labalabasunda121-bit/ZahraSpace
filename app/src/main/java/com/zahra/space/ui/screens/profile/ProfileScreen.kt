@@ -1,4 +1,5 @@
 package com.zahra.space.ui.screens.profile
+@file:Suppress("ExperimentalMaterial3Api")
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape

@@ -1,4 +1,5 @@
 package com.zahra.space.ui.screens.splash
+@file:Suppress("ExperimentalMaterial3Api")
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
