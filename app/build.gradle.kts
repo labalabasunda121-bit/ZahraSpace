@@ -6,10 +6,6 @@ plugins {
 }
 
 android {
-    packaging {
-        resources.exclude("META-INF/**")
-        resources.exclude("**/*.kotlin_module")
-    }
     namespace = "com.zahra.space"
     compileSdk = 34
 
@@ -56,11 +52,14 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.10"
     }
+
+    packaging {
+        resources.excludes.add("META-INF/**")
+        resources.excludes.add("**/*.kotlin_module")
+    }
 }
 
 dependencies {
-    implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation("com.jakewharton.timber:timber:5.0.1")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
@@ -79,6 +78,8 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.51")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.jakewharton.timber:timber:5.0.1")
+    
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
