@@ -14,7 +14,8 @@ import com.zahra.space.data.entity.*
     entities = [
         User::class, QuranAyat::class, Hadist::class, Dzikir::class,
         DailyChecklist::class, Todo::class, Pet::class,
-        HiddenMessage::class, MonthlyLetter::class
+        HiddenMessage::class, MonthlyLetter::class,
+        Restaurant::class   // ← TAMBAH INI!
     ],
     version = 2,
     exportSchema = true
