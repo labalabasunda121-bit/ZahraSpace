@@ -9,6 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+data class ChecklistItem(val name: String, var isChecked: Boolean)
+
 @Composable
 fun ChecklistScreen() {
     val items = remember { mutableStateListOf(
@@ -34,4 +36,3 @@ fun ChecklistScreen() {
         }
     }
 }
-data class ChecklistItem(val name: String, var isChecked: Boolean)

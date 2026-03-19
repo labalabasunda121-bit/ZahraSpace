@@ -18,6 +18,8 @@ import com.zahra.space.viewmodel.DashboardViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
+data class MenuItem(val title: String, val icon: String, val onClick: () -> Unit)
+
 @Composable
 fun DashboardScreen(
     onNavigateToQuran: () -> Unit,

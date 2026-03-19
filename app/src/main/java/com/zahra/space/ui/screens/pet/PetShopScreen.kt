@@ -9,6 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+data class ShopItem(val name: String, val icon: String, val price: Int)
+
 @Composable
 fun PetShopScreen() {
     val items = listOf(
@@ -30,4 +32,3 @@ fun PetShopScreen() {
         }
     }
 }
-data class ShopItem(val name: String, val icon: String, val price: Int)
