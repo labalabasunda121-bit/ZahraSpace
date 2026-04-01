@@ -8,7 +8,7 @@ data class QuranAyat(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val suraId: Int,
     val verseId: Int,
-    val arabicText: String,
+    val ayahText: String,
     val indoText: String,
     val latinText: String
 )
