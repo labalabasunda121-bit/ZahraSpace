@@ -13,6 +13,6 @@ interface QuranDao {
     @Query("SELECT * FROM quran WHERE suraId = :surahId AND verseId = :verseId")
     fun getAyat(surahId: Int, verseId: Int): Flow<QuranAyat?>
     
-    @Query("SELECT DISTINCT suraId, MIN(id) as id, '' as arabicText, '' as indoText, '' as latinText, 0 as verseId FROM quran GROUP BY suraId ORDER BY suraId")
+    @Query("SELECT DISTINCT suraId, MIN(id) as id, '' as ayahText, '' as indoText, '' as latinText, 0 as verseId FROM quran GROUP BY suraId ORDER BY suraId")
     fun getSurahList(): Flow<List<QuranAyat>>
 }
