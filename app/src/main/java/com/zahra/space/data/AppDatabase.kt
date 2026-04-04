@@ -34,6 +34,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun petDao(): PetDao
     abstract fun hiddenMessageDao(): HiddenMessageDao
     abstract fun monthlyLetterDao(): MonthlyLetterDao
+    abstract fun restaurantDao(): RestaurantDao
 
     companion object {
         @Volatile
