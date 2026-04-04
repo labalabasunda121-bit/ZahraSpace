@@ -4,12 +4,31 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import androidx.room.Room
+import com.zahra.space.data.AppDatabase
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class ZahraApplication : Application() {
+    
+    companion object {
+        lateinit var database: AppDatabase
+            private set
+    }
+    
     override fun onCreate() {
         super.onCreate()
+        
+        // Inisialisasi database di awal
+        database = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "zahra_space_database"
+        )
+        .createFromAsset("database/quran.sql")
+        .fallbackToDestructiveMigration()
+        .build()
+        
         createNotificationChannels()
     }
     
