@@ -44,7 +44,7 @@ fun QuranReadScreen(surahId: Int, verseId: Int) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = ayat?.arabicText ?: "",
+                        text = ayat?.ayahText ?: "",
                         fontSize = 28.sp,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )

@@ -14,6 +14,7 @@ sealed class Screen(val route: String) {
     data object TodoCreate : Screen("todo_create")
     data object Fitness : Screen("fitness")
     data object Pet : Screen("pet")
+    data object PetShop : Screen("pet_shop")
     data object Game : Screen("game")
     data object Profile : Screen("profile")
     data object Settings : Screen("settings")
